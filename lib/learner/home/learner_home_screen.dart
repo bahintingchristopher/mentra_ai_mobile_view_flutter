@@ -11,6 +11,8 @@ import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart'
 import 'package:mentra_mobile_view/learner/feeds/feed_view.dart';
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_view.dart';
 import 'package:mentra_mobile_view/learner/feeds/feed_model.dart';
+import 'package:mentra_mobile_view/learner/progress_bar/progress_bar_view.dart';
+import 'package:mentra_mobile_view/learner/profile/profile_settings_view.dart';
 
 class LearnerHome extends StatefulWidget {
   const LearnerHome({super.key});
@@ -101,10 +103,7 @@ class _LearnerHomeState extends State<LearnerHome> {
 
     return Drawer(
       width: 285,
-
-      // Remove default Drawer shadow behavior if desired
       elevation: 8,
-
       child: SafeArea(
         child: Column(
           children: [
@@ -151,7 +150,8 @@ class _LearnerHomeState extends State<LearnerHome> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: theme.colorScheme.onSurface,
+                      color:
+                          theme.colorScheme.onSurface,
                     ),
                   ),
 
@@ -165,10 +165,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                     },
                     icon: Icon(
                       Icons.close,
-                      color:
-                          isDark
-                              ? Colors.white70
-                              : const Color(0xFF64748B),
+                      color: isDark
+                          ? Colors.white70
+                          : const Color(0xFF64748B),
                     ),
                   ),
                 ],
@@ -198,17 +197,15 @@ class _LearnerHomeState extends State<LearnerHome> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color:
-                            isDark
-                                ? const Color(0xFF1E293B)
-                                : const Color(0xFFF8FAFC),
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : const Color(0xFFF8FAFC),
                         borderRadius:
                             BorderRadius.circular(10),
                         border: Border.all(
-                          color:
-                              isDark
-                                  ? const Color(0xFF334155)
-                                  : const Color(0xFFE2E8F0),
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
                         ),
                       ),
                       child: Column(
@@ -220,14 +217,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                               Icon(
                                 Icons.access_time,
                                 size: 16,
-                                color:
-                                    isDark
-                                        ? const Color(
-                                            0xFF94A3B8,
-                                          )
-                                        : const Color(
-                                            0xFF64748B,
-                                          ),
+                                color: isDark
+                                    ? const Color(0xFF94A3B8)
+                                    : const Color(0xFF64748B),
                               ),
                               const SizedBox(width: 8),
                               Text(
@@ -236,14 +228,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                                   fontSize: 12,
                                   fontWeight:
                                       FontWeight.w500,
-                                  color:
-                                      isDark
-                                          ? const Color(
-                                              0xFFCBD5E1,
-                                            )
-                                          : const Color(
-                                              0xFF475569,
-                                            ),
+                                  color: isDark
+                                      ? const Color(0xFFCBD5E1)
+                                      : const Color(0xFF475569),
                                 ),
                               ),
                             ],
@@ -255,11 +242,11 @@ class _LearnerHomeState extends State<LearnerHome> {
                             _getCurrentTime(),
                             style: TextStyle(
                               fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  theme
-                                      .colorScheme
-                                      .onSurface,
+                              fontWeight:
+                                  FontWeight.bold,
+                              color: theme
+                                  .colorScheme
+                                  .onSurface,
                             ),
                           ),
 
@@ -269,14 +256,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                             _getCurrentDate(),
                             style: TextStyle(
                               fontSize: 12,
-                              color:
-                                  isDark
-                                      ? const Color(
-                                          0xFF94A3B8,
-                                        )
-                                      : const Color(
-                                          0xFF64748B,
-                                        ),
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : const Color(0xFF64748B),
                             ),
                           ),
 
@@ -286,14 +268,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                             'Asia/Manila',
                             style: TextStyle(
                               fontSize: 10,
-                              color:
-                                  isDark
-                                      ? const Color(
-                                          0xFF64748B,
-                                        )
-                                      : const Color(
-                                          0xFF94A3B8,
-                                        ),
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
                             ),
                           ),
                         ],
@@ -306,85 +283,18 @@ class _LearnerHomeState extends State<LearnerHome> {
                     // YOUR PROGRESS
                     // ------------------------------------------------
 
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: theme.cardColor,
-                        borderRadius:
-                            BorderRadius.circular(24),
-                        border: Border.all(
-                          color:
-                              isDark
-                                  ? const Color(0xFF334155)
-                                  : const Color(0xFFE2E8F0),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black
-                                .withOpacity(0.06),
-                            blurRadius: 10,
-                            offset:
-                                const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'YOUR PROGRESS',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight:
-                                  FontWeight.w600,
-                              color:
-                                  const Color(
-                                    0xFF0284C7,
-                                  ),
+                    _accessToken.isEmpty
+                        ? const SizedBox(
+                            height: 100,
+                            child: Center(
+                              child:
+                                  CircularProgressIndicator(),
                             ),
+                          )
+                        : ProgressBarView(
+                            accessToken:
+                                _accessToken,
                           ),
-
-                          const SizedBox(height: 18),
-
-                          _progressRow(
-                            label: 'Streak',
-                            value: '0',
-                            subtitle: 'days in a row',
-                            color:
-                                theme
-                                    .colorScheme
-                                    .onSurface,
-                          ),
-
-                          const Divider(height: 24),
-
-                          _progressRow(
-                            label: 'XP',
-                            value: '0',
-                            subtitle: 'points earned',
-                            color:
-                                const Color(
-                                  0xFF0EA5E9,
-                                ),
-                          ),
-
-                          const Divider(height: 24),
-
-                          _progressRow(
-                            label: 'Queued',
-                            value: '4',
-                            subtitle:
-                                'trainings waiting',
-                            color:
-                                const Color(
-                                  0xFFD4A800,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ),
 
                     const SizedBox(height: 16),
 
@@ -400,10 +310,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                         borderRadius:
                             BorderRadius.circular(24),
                         border: Border.all(
-                          color:
-                              isDark
-                                  ? const Color(0xFF334155)
-                                  : const Color(0xFFE2E8F0),
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -453,28 +362,27 @@ class _LearnerHomeState extends State<LearnerHome> {
                                 horizontal: 16,
                                 vertical: 13,
                               ),
-                              decoration: BoxDecoration(
-                                color:
-                                    isDark
-                                        ? const Color(
-                                            0xFF1E293B,
-                                          )
-                                        : const Color(
-                                            0xFFF8FAFC,
-                                          ),
+                              decoration:
+                                  BoxDecoration(
+                                color: isDark
+                                    ? const Color(
+                                        0xFF1E293B,
+                                      )
+                                    : const Color(
+                                        0xFFF8FAFC,
+                                      ),
                                 borderRadius:
                                     BorderRadius.circular(
                                   16,
                                 ),
                                 border: Border.all(
-                                  color:
-                                      isDark
-                                          ? const Color(
-                                              0xFF334155,
-                                            )
-                                          : const Color(
-                                              0xFFE2E8F0,
-                                            ),
+                                  color: isDark
+                                      ? const Color(
+                                          0xFF334155,
+                                        )
+                                      : const Color(
+                                          0xFFE2E8F0,
+                                        ),
                                 ),
                               ),
                               child: Text(
@@ -483,14 +391,13 @@ class _LearnerHomeState extends State<LearnerHome> {
                                   fontSize: 13,
                                   fontWeight:
                                       FontWeight.w600,
-                                  color:
-                                      isDark
-                                          ? const Color(
-                                              0xFFCBD5E1,
-                                            )
-                                          : const Color(
-                                              0xFF475569,
-                                            ),
+                                  color: isDark
+                                      ? const Color(
+                                          0xFFCBD5E1,
+                                        )
+                                      : const Color(
+                                          0xFF475569,
+                                        ),
                                 ),
                               ),
                             ),
@@ -511,86 +418,23 @@ class _LearnerHomeState extends State<LearnerHome> {
   }
 
   // ------------------------------------------------------------
-  // PROGRESS ROW
-  // ------------------------------------------------------------
-
-  Widget _progressRow({
-    required String label,
-    required String value,
-    required String subtitle,
-    required Color color,
-  }) {
-    final theme = Theme.of(context);
-
-    return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 13,
-                  color:
-                      theme
-                          .colorScheme
-                          .onSurface,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color:
-                      theme
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.65),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ------------------------------------------------------------
   // TIME
   // ------------------------------------------------------------
 
   String _getCurrentTime() {
     final now = DateTime.now();
 
-    final hour =
-        now.hour == 0
-            ? 12
-            : now.hour > 12
-                ? now.hour - 12
-                : now.hour;
+    final hour = now.hour == 0
+        ? 12
+        : now.hour > 12
+            ? now.hour - 12
+            : now.hour;
 
-    final minute =
-        now.minute.toString().padLeft(2, '0');
+    final minute = now.minute.toString().padLeft(2, '0');
 
-    final second =
-        now.second.toString().padLeft(2, '0');
+    final second = now.second.toString().padLeft(2, '0');
 
-    final period =
-        now.hour >= 12 ? 'PM' : 'AM';
+    final period = now.hour >= 12 ? 'PM' : 'AM';
 
     return '$hour:$minute:$second $period';
   }
@@ -657,12 +501,12 @@ class _LearnerHomeState extends State<LearnerHome> {
                   _isFeedSelected,
               onSelectMicrotrainings:
                   () => setState(
-                    () => _isFeedSelected = false,
-                  ),
+                () => _isFeedSelected = false,
+              ),
               onSelectFeed:
                   () => setState(
-                    () => _isFeedSelected = true,
-                  ),
+                () => _isFeedSelected = true,
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -708,53 +552,25 @@ class _LearnerHomeState extends State<LearnerHome> {
         ),
       ),
 
+     // ----------------------------------------------------------
+      // INDEX 1: PROFILE SETTINGS
       // ----------------------------------------------------------
-      // INDEX 1: PROFILE
-      // ----------------------------------------------------------
-
-      Center(
-        child: Text(
-          'Profile Screen',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight:
-                FontWeight.bold,
-            color:
-                theme
-                    .colorScheme
-                    .onSurface,
-          ),
-        ),
-      ),
+      const ProfileSettingsView(),
     ];
 
     return Scaffold(
-      backgroundColor:
-          theme.scaffoldBackgroundColor,
-
-      // ==========================================================
-      // THIS IS THE IMPORTANT PART
-      // ==========================================================
-
+      backgroundColor: theme.scaffoldBackgroundColor,
       drawer: _buildLearnerDrawer(context),
-
-      // ==========================================================
-
       appBar: const LearnerTopNavbar(),
-
       body: IndexedStack(
         index: _currentNavIndex,
         children: pages,
       ),
-
-      bottomNavigationBar:
-          LearnerBottomNav(
-        currentIndex:
-            _currentNavIndex,
+      bottomNavigationBar: LearnerBottomNav(
+        currentIndex: _currentNavIndex,
         onTap: (index) {
           setState(() {
-            _currentNavIndex =
-                index;
+            _currentNavIndex = index;
           });
         },
       ),

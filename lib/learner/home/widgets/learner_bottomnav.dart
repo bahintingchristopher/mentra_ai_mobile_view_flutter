@@ -14,7 +14,7 @@ class LearnerBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF0B0F17), // Dark navy matching theme
+        color: Color.fromARGB(255, 7, 41, 110), // Dark navy matching theme
         border: Border(
           top: BorderSide(
             color: Color(0xFF1E293B), // Subtle dark border line
@@ -29,7 +29,7 @@ class LearnerBottomNav extends StatelessWidget {
         elevation: 0,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: const Color(0xFF38BDF8), // Active light blue
-        unselectedItemColor: const Color(0xFF64748B), // Slate gray
+        unselectedItemColor: const Color.fromARGB(255, 227, 233, 241), // Slate gray
         selectedLabelStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
