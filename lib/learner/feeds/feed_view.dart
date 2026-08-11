@@ -19,6 +19,7 @@ class FeedView extends StatefulWidget {
   State<FeedView> createState() => _FeedViewState();
 }
 
+// '-' in _FeedViewState is a naming convention in Dart to indicate that the class is private to the library. It means that this class can only be accessed within the file it is defined in, and not from other files. This is a common practice in Dart to encapsulate implementation details and prevent external access to certain classes or members.
 class _FeedViewState extends State<FeedView> {
   @override
   Widget build(BuildContext context) {
@@ -59,7 +60,6 @@ class _FeedViewState extends State<FeedView> {
             ),
           );
         }
-
         final posts = snapshot.data!;
 
         return ListView.builder(
@@ -79,5 +79,6 @@ class _FeedViewState extends State<FeedView> {
         );
       },
     );
+    
   }
 }

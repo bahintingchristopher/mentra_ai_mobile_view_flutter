@@ -5,12 +5,18 @@ class LikeView extends StatefulWidget {
   final String postId;
   final String accessToken;
   final String? sessionKey;
+  final String? initialReaction;
+
+  // Callback function to be called when the reaction changes -> for immediate UI updates in parent widget
+  final void Function(String reaction)? onReactionChanged;
 
   const LikeView({
     super.key,
     required this.postId,
     required this.accessToken,
     this.sessionKey,
+    this.initialReaction,
+    this.onReactionChanged,
   });
 
   @override
@@ -21,6 +27,12 @@ class _LikeViewState extends State<LikeView> {
   final LikeController controller = LikeController();
 
   String? selectedReaction;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedReaction = widget.initialReaction;
+  }
 
   final Map<String, String> reactions = {
     'like': '👍',
@@ -41,13 +53,19 @@ class _LikeViewState extends State<LikeView> {
           sessionKey: widget.sessionKey,
         );
 
+     
+      // Update the LEFT reaction immediately.
       setState(() {
         selectedReaction = reaction;
-      });
-    } catch (e) {
-      print('Reaction failed: $e');
-    }
-  }
+            });
+
+            // NEW:
+            // Tell FeedPostCard that the reaction changed.
+            widget.onReactionChanged?.call(reaction);
+          } catch (e) {
+            print('Reaction failed: $e');
+          }
+        }
 
   @override
   Widget build(BuildContext context) {
