@@ -70,7 +70,7 @@ class _NotificationsViewState extends State<NotificationsView> {
                         'Receive email notifications for new trainings, posts, and mentions.',
                       ),
                       value: _controller.settings.enableEmailNotifications,
-                      activeColor: const Color(0xFF38BDF8),
+                       activeTrackColor: const Color(0xFF38BDF8),
                       onChanged: (val) => _controller.toggleEmailNotifications(val),
                     ),
                   ),

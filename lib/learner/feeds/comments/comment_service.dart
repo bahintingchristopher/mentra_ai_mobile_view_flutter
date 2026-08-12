@@ -30,15 +30,13 @@ class CommentService {
       headers['session-key'] = sessionKey;
     }
 
-    print('GET COMMENTS URL: $uri');
+    
 
     final response = await http.get(
       uri,
       headers: headers,
     );
-
-    print('Comment GET StatusCode: ${response.statusCode}');
-    print('Comment GET Response: ${response.body}');
+ 
 
    if (response.statusCode == 200) {
   final data = jsonDecode(response.body);
@@ -100,18 +98,13 @@ class CommentService {
       'parent_id': parentId,
     });
 
-    print('CREATE COMMENT URL: $uri');
-    print('CREATE COMMENT BODY: $body');
-
     final response = await http.post(
       uri,
       headers: headers,
       body: body,
     );
 
-    print('Comment POST StatusCode: ${response.statusCode}');
-    print('Comment POST Response: ${response.body}');
-
+ 
     if (response.statusCode == 201) {
       final data = jsonDecode(response.body);
 

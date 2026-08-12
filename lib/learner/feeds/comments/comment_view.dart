@@ -55,7 +55,7 @@ class _CommentViewState extends State<CommentView> {
         loading = false;
       });
     } catch (e) {
-      print('Comment error: $e');
+
 
       if (!mounted) return;
 
@@ -88,7 +88,7 @@ class _CommentViewState extends State<CommentView> {
 
       await loadComments();
     } catch (e) {
-      print('Add comment error: $e');
+      // print('Add comment error: $e');
     } finally {
       if (mounted) {
         setState(() {

@@ -54,18 +54,24 @@ class _LearnerHomeState extends State<LearnerHome> {
   // LOAD FEED
   // ------------------------------------------------------------
 
-  void _loadFeed() async {
-    final token = await StorageService.getAccessToken();
-    final sessionKey = await StorageService.getSessionKey();
-
+  void _loadFeed() {
     setState(() {
-      _accessToken = token ?? '';
-      _sessionKey = sessionKey ?? '';
+      _feedFuture = () async {
+        final token = await StorageService.getAccessToken();
+        final sessionKey = await StorageService.getSessionKey();
 
-      _feedFuture = ApiService.fetchFeedPosts(
-        accessToken: token ?? '',
-        sessionKey: sessionKey ?? '',
-      );
+        if (mounted) {
+          setState(() {
+            _accessToken = token ?? '';
+            _sessionKey = sessionKey ?? '';
+          });
+        }
+
+        return ApiService.fetchFeedPosts(
+          accessToken: token ?? '',
+          sessionKey: sessionKey ?? '',
+        );
+      }();
     });
   }
 
@@ -73,345 +79,409 @@ class _LearnerHomeState extends State<LearnerHome> {
   // LOAD MICROTRAININGS
   // ------------------------------------------------------------
 
-  void _loadMicrotrainings() async {
-    final token = await StorageService.getAccessToken();
-
+  void _loadMicrotrainings() {
     setState(() {
-      _microtrainingFuture =
-          MicrotrainingService.getMicrotrainings(
-        accessToken: token ?? '',
-        status: _selectedStatus,
-        searchQuery: _searchController.text,
-      ).then(
-        (dataList) => dataList
-            .map(
-              (json) => MicrotrainingModel.fromJson(json),
-            )
-            .toList(),
-      );
+      _microtrainingFuture = () async {
+        final token = await StorageService.getAccessToken();
+
+        final dataList =
+            await MicrotrainingService.getMicrotrainings(
+          accessToken: token ?? '',
+          status: _selectedStatus,
+          searchQuery: _searchController.text,
+        );
+
+        return dataList
+            .map((json) => MicrotrainingModel.fromJson(json))
+            .toList();
+      }();
     });
+  }
+
+  // ------------------------------------------------------------
+  // OPEN DRAWER
+  // ------------------------------------------------------------
+
+  void _openLearnerDrawer() {
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Close drawer',
+      barrierColor: Colors.black.withValues(alpha: 0.35),
+      transitionDuration: const Duration(milliseconds: 250),
+      pageBuilder: (
+        context,
+        animation,
+        secondaryAnimation,
+      ) {
+        return const SizedBox.shrink();
+      },
+      transitionBuilder: (
+        context,
+        animation,
+        secondaryAnimation,
+        child,
+      ) {
+        final theme = Theme.of(context);
+
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            color: Colors.transparent,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(-1, 0),
+                end: Offset.zero,
+              ).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ),
+              ),
+              child: _buildLearnerDrawer(context, theme),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // ------------------------------------------------------------
   // DRAWER
   // ------------------------------------------------------------
 
-  Widget _buildLearnerDrawer(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark =
-        theme.brightness == Brightness.dark;
+  Widget _buildLearnerDrawer(
+    BuildContext context,
+    ThemeData theme,
+  ) {
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Drawer(
-      width: 285,
-      elevation: 8,
-      child: SafeArea(
-        child: Column(
-          children: [
-            // --------------------------------------------------
-            // DRAWER HEADER
-            // --------------------------------------------------
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                16,
-                12,
-                12,
-                12,
-              ),
-              child: Row(
-                children: [
-                  // ALMA LOGO
-                  Container(
-                    width: 32,
-                    height: 32,
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: Image.asset(
-                      'assets/almallc.jpg',
-                      errorBuilder:
-                          (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.school,
-                          size: 18,
-                          color: Color(0xFF0284C7),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  // MENTRA
-                  Text(
-                    'Mentra',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color:
-                          theme.colorScheme.onSurface,
-                    ),
-                  ),
-
-                  const Spacer(),
-
-                  // CLOSE BUTTON
-                  IconButton(
-                    tooltip: 'Close',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    icon: Icon(
-                      Icons.close,
-                      color: isDark
-                          ? Colors.white70
-                          : const Color(0xFF64748B),
-                    ),
-                  ),
-                ],
-              ),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: 285,
+        maxHeight: MediaQuery.of(context).size.height - 32,
+      ),
+      child: Container(
+        width: 285,
+        margin: const EdgeInsets.symmetric(
+          vertical: 16,
+        ),
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.20),
+              blurRadius: 20,
+              offset: const Offset(5, 0),
             ),
+          ],
+        ),
+        child: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-            // --------------------------------------------------
-            // DRAWER CONTENT
-            // --------------------------------------------------
+                // --------------------------------------------------
+                // DRAWER HEADER
+                // --------------------------------------------------
 
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    0,
+                    12,
+                    0,
+                    12,
+                  ),
+                  child: Row(
+                    children: [
+
+                      // ALMA LOGO
+                      Container(
+                        width: 32,
+                        height: 32,
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Image.asset(
+                          'assets/almallc.jpg',
+                          errorBuilder:
+                              (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.school,
+                              size: 18,
+                              color: Color(0xFF0284C7),
+                            );
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(width: 8),
+
+                      // MENTRA
+                      Text(
+                        'Mentra',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: theme
+                              .colorScheme
+                              .onSurface,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      // CLOSE BUTTON
+                      IconButton(
+                        tooltip: 'Close',
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        icon: Icon(
+                          Icons.close,
+                          color: isDark
+                              ? Colors.white70
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
 
-                    // ------------------------------------------------
-                    // LOCAL TIME CARD
-                    // ------------------------------------------------
+                const SizedBox(height: 10),
 
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF1E293B)
-                            : const Color(0xFFF8FAFC),
-                        borderRadius:
-                            BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isDark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFE2E8F0),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                size: 16,
-                                color: isDark
-                                    ? const Color(0xFF94A3B8)
-                                    : const Color(0xFF64748B),
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'Local Time',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight:
-                                      FontWeight.w500,
-                                  color: isDark
-                                      ? const Color(0xFFCBD5E1)
-                                      : const Color(0xFF475569),
-                                ),
-                              ),
-                            ],
-                          ),
+                // --------------------------------------------------
+                // LOCAL TIME CARD
+                // --------------------------------------------------
 
-                          const SizedBox(height: 10),
-
-                          Text(
-                            _getCurrentTime(),
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight:
-                                  FontWeight.bold,
-                              color: theme
-                                  .colorScheme
-                                  .onSurface,
-                            ),
-                          ),
-
-                          const SizedBox(height: 2),
-
-                          Text(
-                            _getCurrentDate(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark
-                                  ? const Color(0xFF94A3B8)
-                                  : const Color(0xFF64748B),
-                            ),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          Text(
-                            'Asia/Manila',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: isDark
-                                  ? const Color(0xFF64748B)
-                                  : const Color(0xFF94A3B8),
-                            ),
-                          ),
-                        ],
-                      ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF1E293B)
+                        : const Color(0xFFF8FAFC),
+                    borderRadius:
+                        BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0),
                     ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
 
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------------
-                    // YOUR PROGRESS
-                    // ------------------------------------------------
-
-                    _accessToken.isEmpty
-                        ? const SizedBox(
-                            height: 100,
-                            child: Center(
-                              child:
-                                  CircularProgressIndicator(),
-                            ),
-                          )
-                        : ProgressBarView(
-                            accessToken:
-                                _accessToken,
-                          ),
-
-                    const SizedBox(height: 16),
-
-                    // ------------------------------------------------
-                    // QUICK ACTIONS
-                    // ------------------------------------------------
-
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: theme.cardColor,
-                        borderRadius:
-                            BorderRadius.circular(24),
-                        border: Border.all(
-                          color: isDark
-                              ? const Color(0xFF334155)
-                              : const Color(0xFFE2E8F0),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black
-                                .withOpacity(0.06),
-                            blurRadius: 10,
-                            offset:
-                                const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                      Row(
                         children: [
-                          const Text(
-                            'QUICK ACTIONS',
+                          Icon(
+                            Icons.access_time,
+                            size: 16,
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFF64748B),
+                          ),
+
+                          const SizedBox(width: 8),
+
+                          Text(
+                            'Local Time',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight:
-                                  FontWeight.w600,
-                              color:
-                                  Color(0xFF0284C7),
+                                  FontWeight.w500,
+                              color: isDark
+                                  ? const Color(0xFFCBD5E1)
+                                  : const Color(0xFF475569),
                             ),
                           ),
+                        ],
+                      ),
 
-                          const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
-                          InkWell(
+                      Text(
+                        _getCurrentTime(),
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: theme
+                              .colorScheme
+                              .onSurface,
+                        ),
+                      ),
+
+                      const SizedBox(height: 2),
+
+                      Text(
+                        _getCurrentDate(),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      Text(
+                        'Asia/Manila',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isDark
+                              ? const Color(0xFF64748B)
+                              : const Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // --------------------------------------------------
+                // YOUR PROGRESS
+                // --------------------------------------------------
+
+                _accessToken.isEmpty
+                    ? const SizedBox(
+                        height: 100,
+                        child: Center(
+                          child:
+                              CircularProgressIndicator(),
+                        ),
+                      )
+                    : ProgressBarView(
+                        accessToken: _accessToken,
+                      ),
+
+                const SizedBox(height: 16),
+
+                // --------------------------------------------------
+                // QUICK ACTIONS
+                // --------------------------------------------------
+
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius:
+                        BorderRadius.circular(24),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black
+                            .withValues(alpha: 0.06),
+                        blurRadius: 10,
+                        offset:
+                            const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+
+                      const Text(
+                        'QUICK ACTIONS',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight:
+                              FontWeight.w600,
+                          color:
+                              Color(0xFF0284C7),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      InkWell(
+                        borderRadius:
+                            BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.of(context).pop();
+
+                          setState(() {
+                            _currentNavIndex = 1;
+                          });
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          padding:
+                              const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 13,
+                          ),
+                          decoration:
+                              BoxDecoration(
+                            color: isDark
+                                ? const Color(
+                                    0xFF1E293B,
+                                  )
+                                : const Color(
+                                    0xFFF8FAFC,
+                                  ),
                             borderRadius:
                                 BorderRadius.circular(
                               16,
                             ),
-                            onTap: () {
-                              Navigator.of(context)
-                                  .pop();
-
-                              setState(() {
-                                _currentNavIndex = 1;
-                              });
-                            },
-                            child: Container(
-                              width: double.infinity,
-                              padding:
-                                  const EdgeInsets
-                                      .symmetric(
-                                horizontal: 16,
-                                vertical: 13,
-                              ),
-                              decoration:
-                                  BoxDecoration(
-                                color: isDark
-                                    ? const Color(
-                                        0xFF1E293B,
-                                      )
-                                    : const Color(
-                                        0xFFF8FAFC,
-                                      ),
-                                borderRadius:
-                                    BorderRadius.circular(
-                                  16,
-                                ),
-                                border: Border.all(
-                                  color: isDark
-                                      ? const Color(
-                                          0xFF334155,
-                                        )
-                                      : const Color(
-                                          0xFFE2E8F0,
-                                        ),
-                                ),
-                              ),
-                              child: Text(
-                                'View Profile',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight:
-                                      FontWeight.w600,
-                                  color: isDark
-                                      ? const Color(
-                                          0xFFCBD5E1,
-                                        )
-                                      : const Color(
-                                          0xFF475569,
-                                        ),
-                                ),
-                              ),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(
+                                      0xFF334155,
+                                    )
+                                  : const Color(
+                                      0xFFE2E8F0,
+                                    ),
                             ),
                           ),
-                        ],
+                          child: Text(
+                            'View Profile',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight:
+                                  FontWeight.w600,
+                              color: isDark
+                                  ? const Color(
+                                      0xFFCBD5E1,
+                                    )
+                                  : const Color(
+                                      0xFF475569,
+                                    ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 30),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                // Small bottom spacing
+                const SizedBox(height: 16),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -430,11 +500,14 @@ class _LearnerHomeState extends State<LearnerHome> {
             ? now.hour - 12
             : now.hour;
 
-    final minute = now.minute.toString().padLeft(2, '0');
+    final minute =
+        now.minute.toString().padLeft(2, '0');
 
-    final second = now.second.toString().padLeft(2, '0');
+    final second =
+        now.second.toString().padLeft(2, '0');
 
-    final period = now.hour >= 12 ? 'PM' : 'AM';
+    final period =
+        now.hour >= 12 ? 'PM' : 'AM';
 
     return '$hour:$minute:$second $period';
   }
@@ -486,6 +559,7 @@ class _LearnerHomeState extends State<LearnerHome> {
     final theme = Theme.of(context);
 
     final List<Widget> pages = [
+
       // ----------------------------------------------------------
       // INDEX 0: FEED / MICROTRAININGS
       // ----------------------------------------------------------
@@ -496,13 +570,16 @@ class _LearnerHomeState extends State<LearnerHome> {
           crossAxisAlignment:
               CrossAxisAlignment.start,
           children: [
+
             HomeHeader(
               isFeedSelected:
                   _isFeedSelected,
+
               onSelectMicrotrainings:
                   () => setState(
                 () => _isFeedSelected = false,
               ),
+
               onSelectFeed:
                   () => setState(
                 () => _isFeedSelected = true,
@@ -512,11 +589,14 @@ class _LearnerHomeState extends State<LearnerHome> {
             const SizedBox(height: 20),
 
             if (!_isFeedSelected) ...[
+
               MicrotrainingFilters(
                 selectedStatus:
                     _selectedStatus,
+
                 searchController:
                     _searchController,
+
                 onStatusChanged:
                     (newStatus) {
                   setState(() {
@@ -525,6 +605,7 @@ class _LearnerHomeState extends State<LearnerHome> {
                     _loadMicrotrainings();
                   });
                 },
+
                 onSearchChanged:
                     (_) => _loadMicrotrainings(),
               ),
@@ -552,20 +633,29 @@ class _LearnerHomeState extends State<LearnerHome> {
         ),
       ),
 
-     // ----------------------------------------------------------
+      // ----------------------------------------------------------
       // INDEX 1: PROFILE SETTINGS
       // ----------------------------------------------------------
+
       const ProfileSettingsView(),
     ];
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      drawer: _buildLearnerDrawer(context),
-      appBar: const LearnerTopNavbar(),
+      backgroundColor:
+          theme.scaffoldBackgroundColor,
+
+      // IMPORTANT:
+      // We are NOT using Scaffold.drawer anymore.
+
+      appBar: LearnerTopNavbar(
+        onMenuPressed: _openLearnerDrawer,
+      ),
+
       body: IndexedStack(
         index: _currentNavIndex,
         children: pages,
       ),
+
       bottomNavigationBar: LearnerBottomNav(
         currentIndex: _currentNavIndex,
         onTap: (index) {

@@ -259,7 +259,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF0284C7).withOpacity(0.3),
+                      color: const Color(0xFF0284C7).withValues(alpha: 0.3),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),

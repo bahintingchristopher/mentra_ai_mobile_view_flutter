@@ -44,8 +44,8 @@ class _LikeViewState extends State<LikeView> {
   };
 
   Future<void> selectReaction(String reaction) async {
-    print('DEBUG: Attempting to like Post ID -> "${widget.postId}"');
-    try {
+  
+      try {
       await controller.likePost(
           postId: int.parse(widget.postId),
           reaction: reaction,
@@ -63,7 +63,7 @@ class _LikeViewState extends State<LikeView> {
             // Tell FeedPostCard that the reaction changed.
             widget.onReactionChanged?.call(reaction);
           } catch (e) {
-            print('Reaction failed: $e');
+            // print('Reaction failed: $e');
           }
         }
 

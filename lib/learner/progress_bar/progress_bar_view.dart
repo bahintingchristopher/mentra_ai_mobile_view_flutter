@@ -134,7 +134,7 @@ class _ProgressBarViewState
             boxShadow: [
               BoxShadow(
                 color:
-                    Colors.black.withOpacity(0.06),
+                    Colors.black.withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset:
                     const Offset(0, 4),
@@ -272,7 +272,7 @@ class _ProgressBarViewState
                   color: theme
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.65),
+                      .withValues(alpha: 0.65),
                 ),
               ),
             ],

@@ -19,8 +19,7 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      print("LOGIN RESPONSE:");
-      print(response.body);
+            
 
       final Map<String, dynamic> body = jsonDecode(response.body);
       final Map<String, dynamic> responseData = body['data'] ?? body;

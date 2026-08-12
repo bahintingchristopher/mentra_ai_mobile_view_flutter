@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
-import '../../admin/authentication/user_model.dart';
+import 'package:mentra_mobile_view/features/auth/user_model.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();

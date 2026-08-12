@@ -32,9 +32,6 @@ class LikeService {
       }),
     );
 
-    print('Reaction StatusCode: ${response.statusCode}');
-    print('Reaction Response: ${response.body}');
-
     if (response.statusCode != 200) {
       throw Exception(
         'Failed to send reaction: ${response.statusCode}',

@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/features/auth/user_model.dart';
 import 'package:mentra_mobile_view/features/auth/auth_service.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
-import 'package:mentra_mobile_view/admin/admin_home.dart';
-import 'package:mentra_mobile_view/learner/home/learner_home_screen.dart';
-import 'package:mentra_mobile_view/super_admin/superadmin_home.dart';
+// import 'package:mentra_mobile_view/admin/admin_home.dart';
+// import 'package:mentra_mobile_view/learner/home/learner_home_screen.dart';
+// import 'package:mentra_mobile_view/super_admin/superadmin_home.dart';
 
 class LoginScreen extends StatefulWidget {
   final String? initialError;
@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final UserModel userModel = await _authService.login(username, password);
       await StorageService.setSessionActive(true);
 
-      final displayName = userModel.firstName ?? userModel.username;
+      final displayName = userModel.firstName.isNotEmpty ? userModel.firstName : userModel.username;
       setState(() {
         _successMessage = 'Welcome back, $displayName. Your personalized feed is ready.';
       });
@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Future.delayed(const Duration(seconds: 1));
 
       if (mounted) {
-        final String role = (userModel.role ?? '').toString().toLowerCase();
+        final String role = (userModel.role ).toString().toLowerCase();
 
         if (role == 'superadmin' || role == 'superuser') {
           Navigator.of(context).pushReplacementNamed('/superadmin_home');
@@ -145,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF38BDF8).withOpacity(0.2),
+                  color: const Color(0xFF38BDF8).withValues(alpha: 0.2),
               ),
             ),
           ),
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF34D399).withOpacity(0.15),
+                color: const Color(0xFF34D399).withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: cardColor.withOpacity(0.8),
+                            color: cardColor.withValues(alpha: 0.8),
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
                               color: _isDarkMode ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
@@ -263,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? []
                               : [
                                   BoxShadow(
-                                    color: const Color(0xFF0F172A).withOpacity(0.04),
+                                    color: const Color(0xFF0F172A).withValues(alpha: 0.04),
                                     blurRadius: 24,
                                     offset: const Offset(0, 12),
                                   ),
@@ -445,7 +445,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 20),
                               Row(
                                 children: [
-                                  Expanded(child: Divider(color: secondaryTextColor.withOpacity(0.2))),
+                                  Expanded(child: Divider(color: secondaryTextColor.withValues(alpha: 0.2))),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 12.0),
                                     child: Text(
@@ -457,7 +457,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
-                                  Expanded(child: Divider(color: secondaryTextColor.withOpacity(0.2))),
+                                  Expanded(child: Divider(color: secondaryTextColor.withValues(alpha: 0.2))),
                                 ],
                               ),
                               const SizedBox(height: 14),
@@ -502,7 +502,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: _isDarkMode ? textColor.withOpacity(0.15) : bgColor,
+        color: _isDarkMode ? textColor.withValues(alpha: 0.15) : bgColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -510,7 +510,7 @@ class _LoginScreenState extends State<LoginScreen> {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: _isDarkMode ? textColor.withOpacity(0.9) : textColor,
+          color: _isDarkMode ? textColor.withValues(alpha: 0.9) : textColor,
         ),
       ),
     );

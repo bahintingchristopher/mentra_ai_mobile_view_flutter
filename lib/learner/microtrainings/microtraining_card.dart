@@ -5,11 +5,11 @@ class MicrotrainingCard extends StatelessWidget {
   final MicrotrainingModel item;
   final VoidCallback? onTap;
 
-  const MicrotrainingCard({
-    Key? key,
-    required this.item,
-    this.onTap,
-  }) : super(key: key);
+const MicrotrainingCard({
+  super.key,
+  required this.item,
+  this.onTap,
+});
 
   @override
   Widget build(BuildContext context) {

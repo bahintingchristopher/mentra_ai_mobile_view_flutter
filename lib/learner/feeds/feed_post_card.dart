@@ -389,9 +389,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                 widget.post.imageUrl!,
                 fit: BoxFit.cover,
                 width: double.infinity,
-                errorBuilder:
-                    (_, __, ___) =>
-                        const SizedBox.shrink(),
+               errorBuilder: (context, error, stackTrace) {
+                  return const SizedBox.shrink();
+                },
               ),
             ),
 
