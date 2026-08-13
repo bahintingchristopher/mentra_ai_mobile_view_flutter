@@ -93,8 +93,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (role == 'superadmin' || role == 'superuser') {
           Navigator.of(context).pushReplacementNamed('/superadmin_home');
-        } else if (role == 'admin' || role == 'staff') {
-          Navigator.of(context).pushReplacementNamed('/admin_home');
         } else {
           Navigator.of(context).pushReplacementNamed('/learner_home');
         }

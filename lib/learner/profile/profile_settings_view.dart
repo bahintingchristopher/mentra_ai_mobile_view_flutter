@@ -23,12 +23,12 @@ class ProfileSettingsView extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Back to Dashboard'),
-            ),
-          ],
+          // actions: [
+          //   TextButton(
+          //     onPressed: () => Navigator.pop(context),
+          //     child: const Text('Back to Dashboard'),
+          //   ),
+          // ],
           bottom: const TabBar(
             isScrollable: true,
             labelColor: Color(0xFF38BDF8),

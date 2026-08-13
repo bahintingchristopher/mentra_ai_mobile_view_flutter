@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_controller.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
@@ -109,11 +109,12 @@ class NotificationDropdown extends StatelessWidget {
                               return Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     // Unread Indicator Dot
                                     Container(
-                                      margin: const EdgeInsets.only(top: 5, right: 10),
+                                      margin: const EdgeInsets.only(right: 8),
                                       width: 8,
                                       height: 8,
                                       decoration: BoxDecoration(
@@ -124,12 +125,14 @@ class NotificationDropdown extends StatelessWidget {
                                       ),
                                     ),
                                     // Title & Date
-                                    Expanded(
+                                    Flexible(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           Text(
                                             item.title,
+                                            textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 13,
                                               fontWeight: isUnread 
@@ -141,6 +144,7 @@ class NotificationDropdown extends StatelessWidget {
                                           const SizedBox(height: 4),
                                           Text(
                                             _formatDate(item.createdAt),
+                                            textAlign: TextAlign.center,
                                             style: const TextStyle(
                                               fontSize: 11,
                                               color: Color(0xFF94A3B8),

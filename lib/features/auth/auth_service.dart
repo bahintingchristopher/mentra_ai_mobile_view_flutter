@@ -34,12 +34,17 @@ class AuthService {
           responseData['session_key'] ??
           '';
 
+      final String refreshToken = tokens?['refresh'] ??
+        responseData['refresh'] ??
+        '';
+
       // Save credentials using the static StorageService
       if (accessToken.isNotEmpty) {
         await StorageService.saveAuthData(
           accessToken: accessToken,
           sessionKey: sessionKey,
           userJson: jsonEncode(responseData['user'] ?? responseData),
+          refreshToken: refreshToken,
         );
       }
 

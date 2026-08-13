@@ -30,7 +30,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
       builder: (context, _) {
         if (_controller.isLoading) {
           return const Center(
-            child: CircularProgressIndicator(color: Color(0xFF38BDF8)),
+            child: CircularProgressIndicator(
+              color: Color(0xFF38BDF8),
+            ),
           );
         }
 
@@ -54,7 +56,8 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                         backgroundColor: const Color(0xFF38BDF8),
                         child: Text(
                           _controller.firstNameController.text.isNotEmpty
-                              ? _controller.firstNameController.text[0].toUpperCase()
+                              ? _controller.firstNameController.text[0]
+                                  .toUpperCase()
                               : 'B',
                           style: const TextStyle(
                             color: Colors.white,
@@ -69,7 +72,10 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                         children: [
                           Text(
                             'Profile',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             'Your profile information',
@@ -79,7 +85,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 24),
+
                   Row(
                     children: [
                       Expanded(
@@ -103,7 +111,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 16),
+
                   TextFormField(
                     controller: _controller.emailController,
                     decoration: const InputDecoration(
@@ -111,7 +121,9 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+
                   const SizedBox(height: 16),
+
                   TextFormField(
                     controller: _controller.phoneController,
                     decoration: const InputDecoration(
@@ -120,21 +132,33 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                       border: OutlineInputBorder(),
                     ),
                   ),
+
                   const SizedBox(height: 24),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       OutlinedButton(
-                        onPressed: () => _controller.loadProfileData(),
+                        onPressed: () {
+                          _controller.loadProfileData();
+                        },
                         child: const Text('Cancel'),
                       ),
+
                       const SizedBox(width: 12),
+
                       ElevatedButton(
                         onPressed: () async {
-                          bool success = await _controller.saveChanges();
+                          final success =
+                              await _controller.saveChanges();
+
                           if (context.mounted && success) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Profile updated successfully!')),
+                              const SnackBar(
+                                content: Text(
+                                  'Profile updated successfully!',
+                                ),
+                              ),
                             );
                           }
                         },

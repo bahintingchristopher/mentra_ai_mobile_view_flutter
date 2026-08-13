@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
 import 'package:mentra_mobile_view/features/auth/login_screen.dart';
@@ -53,11 +53,48 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
   }
 
   Future<void> _handleDefaultSignOut(BuildContext context) async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('No'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout != true) return;
+    if (!context.mounted) return;
+
     await StorageService.clearTokens();
     if (!context.mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const LoginScreen()),
       (route) => false,
+    );
+  }
+
+
+  void _showNotifications(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.35),
+      builder: (dialogContext) => Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        insetPadding: const EdgeInsets.only(top: 40, left:24, right: 24, bottom: 250),
+        child: NotificationDropdown(
+          controller: _notificationController,
+        ),
+      ),
     );
   }
 
@@ -173,13 +210,8 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                 final unreadCount = _notificationController.unreadCount;
                 final badgeText = unreadCount > 9 ? '9+' : unreadCount.toString();
 
-                return PopupMenuButton<void>(
+                return IconButton(
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(maxWidth: 320, maxHeight: 380),
-                  offset: const Offset(0, 40),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
@@ -212,14 +244,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                         ),
                     ],
                   ),
-                  itemBuilder: (BuildContext context) => [
-                    PopupMenuItem<void>(
-                      enabled: false,
-                      child: NotificationDropdown(
-                        controller: _notificationController,
-                      ),
-                    ),
-                  ],
+                  onPressed: () => _showNotifications(context),
                 );
               },
             ),

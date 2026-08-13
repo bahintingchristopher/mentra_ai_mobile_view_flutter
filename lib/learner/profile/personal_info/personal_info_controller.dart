@@ -3,7 +3,7 @@ import 'personal_info_model.dart';
 import 'personal_info_service.dart';
 
 class PersonalInfoController extends ChangeNotifier {
-  final PersonalInfoService _service = PersonalInfoService();
+  final PersonalInfoService _service;
 
   PersonalInfoModel? info;
   bool isLoading = false;
@@ -13,11 +13,14 @@ class PersonalInfoController extends ChangeNotifier {
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
+ PersonalInfoController(): _service = PersonalInfoService();
+
   Future<void> loadProfileData() async {
     isLoading = true;
     notifyListeners();
 
     info = await _service.fetchPersonalInfo();
+
     if (info != null) {
       firstNameController.text = info!.firstName;
       lastNameController.text = info!.lastName;
@@ -36,15 +39,21 @@ class PersonalInfoController extends ChangeNotifier {
     notifyListeners();
 
     final updatedModel = PersonalInfoModel(
-      firstName: firstNameController.text,
-      lastName: lastNameController.text,
-      email: emailController.text,
-      phoneNumber: phoneController.text,
+      firstName: firstNameController.text.trim(),
+      lastName: lastNameController.text.trim(),
+      email: emailController.text.trim(),
+      phoneNumber: phoneController.text.trim(),
     );
 
-    bool success = await _service.updatePersonalInfo(updatedModel);
+    final success = await _service.updatePersonalInfo(updatedModel);
+
+    if (success) {
+      info = updatedModel;
+    }
+
     isLoading = false;
     notifyListeners();
+
     return success;
   }
 

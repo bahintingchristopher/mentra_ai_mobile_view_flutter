@@ -11,8 +11,9 @@ class ChangePasswordModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'current_password': currentPassword,
+      'old_password': currentPassword,
       'new_password': newPassword,
+      'new_password_confirm': confirmPassword,
     };
   }
 }

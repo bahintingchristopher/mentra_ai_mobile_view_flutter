@@ -18,7 +18,7 @@ class AuthController extends ChangeNotifier {
         case 'superadmin':
           return '/superadmin_home'; // Ready for when backend adds superadmin
         case 'admin':
-          return '/admin_home';
+          return '/admin_webview'; // Admins are redirected to the WebView
         case 'learner':
         default:
           return '/learner_home';
