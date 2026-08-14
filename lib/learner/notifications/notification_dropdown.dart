@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_controller.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
@@ -32,8 +32,15 @@ class NotificationDropdown extends StatelessWidget {
           width: 320,
           constraints: const BoxConstraints(maxHeight: 400),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF1E293B)
+                : Colors.white,
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF334155)
+                  : const Color(0xFFE2E8F0),
+            ),
             boxShadow: const [
               BoxShadow(
                 color: Colors.black12, 
@@ -52,12 +59,14 @@ class NotificationDropdown extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Notifications',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: Color(0xFF0F172A),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF0F172A),
                       ),
                     ),
                     InkWell(
@@ -86,13 +95,15 @@ class NotificationDropdown extends StatelessWidget {
                         ),
                       )
                     : controller.notifications.isEmpty
-                        ? const Center(
+                        ? Center(
                             child: Padding(
                               padding: EdgeInsets.all(24.0),
                               child: Text(
                                 'No notifications',
                                 style: TextStyle(
-                                  color: Color(0xFF64748B), 
+                                  color: Theme.of(context).brightness == Brightness.dark
+                                      ? const Color(0xFF94A3B8)
+                                      : const Color(0xFF64748B),
                                   fontSize: 13,
                                 ),
                               ),
@@ -138,7 +149,9 @@ class NotificationDropdown extends StatelessWidget {
                                               fontWeight: isUnread 
                                                   ? FontWeight.w600 
                                                   : FontWeight.normal,
-                                              color: const Color(0xFF1E293B),
+                                              color: Theme.of(context).brightness == Brightness.dark
+                                                  ? Colors.white
+                                                  : const Color(0xFF1E293B),
                                             ),
                                           ),
                                           const SizedBox(height: 4),

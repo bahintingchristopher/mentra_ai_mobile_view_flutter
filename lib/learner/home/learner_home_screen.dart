@@ -34,7 +34,10 @@ class _LearnerHomeState extends State<LearnerHome> {
       TextEditingController();
 
   late Future<List<FeedPost>> _feedFuture;
-  late Future<List<MicrotrainingModel>> _microtrainingFuture;
+  List<MicrotrainingModel> _allMicrotrainings = [];
+  List<MicrotrainingModel> _filteredMicrotrainings = [];
+  bool _microtrainingLoading = false;
+  String? _microtrainingError;
 
   @override
   void initState() {
@@ -79,22 +82,62 @@ class _LearnerHomeState extends State<LearnerHome> {
   // LOAD MICROTRAININGS
   // ------------------------------------------------------------
 
-  void _loadMicrotrainings() {
+  void _loadMicrotrainings() async {
     setState(() {
-      _microtrainingFuture = () async {
-        final token = await StorageService.getAccessToken();
+      _microtrainingLoading = true;
+      _microtrainingError = null;
+    });
 
-        final dataList =
-            await MicrotrainingService.getMicrotrainings(
-          accessToken: token ?? '',
-          status: _selectedStatus,
-          searchQuery: _searchController.text,
-        );
+    final token = await StorageService.getAccessToken();
 
-        return dataList
+    try {
+      final dataList = await MicrotrainingService.getMicrotrainings(
+        accessToken: token ?? '',
+        status: _selectedStatus,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _allMicrotrainings = dataList
             .map((json) => MicrotrainingModel.fromJson(json))
             .toList();
-      }();
+        _microtrainingLoading = false;
+        _filteredMicrotrainings = _computeFilteredMicrotrainings();
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _microtrainingLoading = false;
+        _microtrainingError = e.toString();
+      });
+    }
+  }
+
+  List<MicrotrainingModel> _computeFilteredMicrotrainings() {
+    final query = _searchController.text.trim().toLowerCase();
+    final status = _selectedStatus.toLowerCase();
+
+    return _allMicrotrainings.where((m) {
+      if (m.status.toLowerCase() != status) return false;
+
+      if (query.isEmpty) return true;
+
+      final haystack = [
+        m.title,
+        m.description ?? '',
+        ...m.categories,
+        m.pendingStatusText,
+      ].join(' ').toLowerCase();
+
+      return haystack.contains(query);
+    }).toList();
+  }
+
+  void _applyMicrotrainingFilters() {
+    setState(() {
+      _filteredMicrotrainings = _computeFilteredMicrotrainings();
     });
   }
 
@@ -600,14 +643,13 @@ class _LearnerHomeState extends State<LearnerHome> {
                 onStatusChanged:
                     (newStatus) {
                   setState(() {
-                    _selectedStatus =
-                        newStatus;
-                    _loadMicrotrainings();
+                    _selectedStatus = newStatus;
                   });
+                  _applyMicrotrainingFilters();
                 },
 
                 onSearchChanged:
-                    (_) => _loadMicrotrainings(),
+                    (_) => _applyMicrotrainingFilters(),
               ),
 
               const SizedBox(height: 16),
@@ -626,8 +668,10 @@ class _LearnerHomeState extends State<LearnerHome> {
                     },
                   )
                 : MicrotrainingView(
-                    microtrainingFuture:
-                        _microtrainingFuture,
+                    items: _filteredMicrotrainings,
+                    loading: _microtrainingLoading,
+                    error: _microtrainingError,
+                    onRetry: _loadMicrotrainings,
                   ),
           ],
         ),

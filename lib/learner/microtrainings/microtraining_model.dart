@@ -22,7 +22,6 @@ class MicrotrainingModel {
   factory MicrotrainingModel.fromJson(Map<String, dynamic> json) {
     List<String> parsedCategories = [];
 
-    // 1. Extract categories list or single category string
     if (json['categories'] != null && json['categories'] is List) {
       parsedCategories = (json['categories'] as List)
           .map((e) => e.toString())
@@ -31,13 +30,11 @@ class MicrotrainingModel {
       parsedCategories = [json['category'].toString()];
     }
 
-    // 2. Ensure "Microtraining" badge is present
     bool hasMicro = parsedCategories.any((cat) => cat.toLowerCase().contains('microtraining'));
     if (!hasMicro) {
       parsedCategories.insert(0, 'Microtraining');
     }
 
-    // 3. Extract question count cleanly (handles both List.length and integer count)
     int calculatedQuestionsCount = 0;
 
     if (json['questions_count'] is int) {
@@ -55,9 +52,9 @@ class MicrotrainingModel {
     return MicrotrainingModel(
       categories: parsedCategories,
       title: json['title'] ?? '',
-      status: json['status'] ?? 'Pending',
+      status: json['completion_status'] ?? json['status'] ?? 'Pending',
       pendingStatusText: json['pending_status_text'] ?? 'Pending completion',
-      description: json['description'],
+      description: json['description'] ?? json['content'],
       questionsCount: calculatedQuestionsCount,
       assignedDate: json['assigned_date'] ?? json['created_at'] ?? '',
       noticeMessage: json['notice_message'] ?? '',

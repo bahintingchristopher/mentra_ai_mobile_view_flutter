@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
 import 'package:mentra_mobile_view/features/auth/login_screen.dart';
@@ -139,12 +139,14 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
             const SizedBox(width: 4),
 
             // Mentra Title
-            const Text(
+            Text(
               'Mentra',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF0F172A),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : const Color(0xFF0F172A),
                 letterSpacing: -0.3,
               ),
             ),
@@ -215,10 +217,12 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                   icon: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.notifications_none_rounded,
                         size: 20,
-                        color: Color(0xFF334155),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF334155),
                       ),
                       if (unreadCount > 0)
                         Positioned(

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class MicrotrainingFilters extends StatelessWidget {
   final String selectedStatus;
@@ -16,6 +16,8 @@ class MicrotrainingFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -23,14 +25,14 @@ class MicrotrainingFilters extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: const Color(0xFFF1F5F9),
+            color: isDark ? const Color(0xFF131822) : const Color(0xFFF1F5F9),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildStatusPill('Pending', 'pending'),
-              _buildStatusPill('Completed', 'completed'),
+              _buildStatusPill(context, 'Pending', 'pending'),
+              _buildStatusPill(context, 'Completed', 'completed'),
             ],
           ),
         ),
@@ -42,17 +44,24 @@ class MicrotrainingFilters extends StatelessWidget {
           onChanged: onSearchChanged,
           decoration: InputDecoration(
             hintText: 'Search microtrainings...',
-            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+            hintStyle: TextStyle(
+              color: const Color(0xFF94A3B8),
+              fontSize: 14,
+            ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            fillColor: Colors.white,
+            fillColor: isDark ? const Color(0xFF1B2234) : Colors.white,
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: BorderSide(
+                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              borderSide: BorderSide(
+                color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+              ),
             ),
           ),
         ),
@@ -60,7 +69,8 @@ class MicrotrainingFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusPill(String label, String value) {
+  Widget _buildStatusPill(BuildContext context, String label, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isSelected = selectedStatus == value;
     return GestureDetector(
       onTap: () => onStatusChanged(value),
@@ -75,10 +85,13 @@ class MicrotrainingFilters extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF64748B),
+            color: isSelected
+                ? Colors.white
+                : (isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B)),
           ),
         ),
       ),
     );
   }
 }
+

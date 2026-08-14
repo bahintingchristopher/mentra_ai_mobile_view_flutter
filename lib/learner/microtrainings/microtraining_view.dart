@@ -3,50 +3,65 @@ import 'package:mentra_mobile_view/learner/microtrainings/microtraining_card.dar
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_model.dart';
 
 class MicrotrainingView extends StatelessWidget {
-  final Future<List<MicrotrainingModel>> microtrainingFuture;
+  final List<MicrotrainingModel> items;
+  final bool loading;
+  final String? error;
+  final VoidCallback? onRetry;
 
-  const MicrotrainingView({super.key, required this.microtrainingFuture});
+  const MicrotrainingView({
+    super.key,
+    this.items = const [],
+    this.loading = false,
+    this.error,
+    this.onRetry,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<MicrotrainingModel>>(
-      future: microtrainingFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Text(
-                'Error loading microtrainings: ${snapshot.error}',
+    if (loading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Text(
+                'Error loading microtrainings: $error',
                 style: const TextStyle(color: Colors.red),
               ),
-            ),
-          );
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: Text('No microtrainings found.'),
-            ),
-          );
-        }
+              if (onRetry != null) ...[
+                const SizedBox(height: 8),
+                TextButton(onPressed: onRetry, child: const Text('Retry')),
+              ],
+            ],
+          ),
+        ),
+      );
+    }
 
-        final items = snapshot.data!;
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return MicrotrainingCard(item: items[index]);
-          },
-        );
+    if (items.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Text('No microtrainings found.'),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        return MicrotrainingCard(item: items[index]);
       },
     );
   }
