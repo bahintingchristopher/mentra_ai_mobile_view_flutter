@@ -46,7 +46,7 @@ class MicrotrainingFilters extends StatelessWidget {
             hintText: 'Search microtrainings...',
             hintStyle: TextStyle(
               color: const Color(0xFF94A3B8),
-              fontSize: 14,
+              fontSize: 14, 
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             fillColor: isDark ? const Color(0xFF1B2234) : Colors.white,

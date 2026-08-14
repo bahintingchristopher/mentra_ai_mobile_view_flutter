@@ -202,11 +202,10 @@ class _LearnerHomeState extends State<LearnerHome> {
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 285,
-        maxHeight: MediaQuery.of(context).size.height,
+        maxHeight: MediaQuery.of(context).size.height - 32,
       ),
       child: Container(
         width: 285,
-        height: MediaQuery.of(context).size.height - 32,
         margin: const EdgeInsets.symmetric(
           vertical: 16,
         ),
@@ -250,16 +249,17 @@ class _LearnerHomeState extends State<LearnerHome> {
                     children: [
 
                       // ALMA LOGO
-                      Container(
-                        width: 32,
-                        height: 32,
+                          Container(
+                        width: 66,
+                        height: 24,
                         padding: const EdgeInsets.all(2),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
+                        decoration: BoxDecoration(
                           color: Colors.white,
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: Image.asset(
                           'assets/almallc.jpg',
+                          fit: BoxFit.contain,
                           errorBuilder:
                               (context, error, stackTrace) {
                             return const Icon(

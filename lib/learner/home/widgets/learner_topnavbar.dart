@@ -119,56 +119,49 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
-            const SizedBox(width: 2),
+            const SizedBox(width: 8),
 
-            // ALMA Logo
+             // ALMA Logo
             Container(
-              width: 28,
-              height: 28,
-              padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
+              width: 38,
+              height: 22,
+              padding: const EdgeInsets.all(1),
+              decoration: BoxDecoration(
                 color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Image.asset(
                 'assets/almallc.jpg',
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) =>
                     const Icon(Icons.school, size: 16, color: Color(0xFF0284C7)),
               ),
             ),
-            const SizedBox(width: 4),
+             const SizedBox(width: 8),
 
             // Mentra Title
-            Text(
-              'Mentra',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : const Color(0xFF0F172A),
-                letterSpacing: -0.3,
-              ),
-            ),
-            const SizedBox(width: 4),
-
-            // Learner Badge
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE6F4EA),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFA8E6CF)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 3,
               ),
-              child: const Text(
-                'Learner',
+              // decoration: BoxDecoration(
+              //   color: const Color.fromARGB(114, 71, 53, 64),
+              //   borderRadius: BorderRadius.circular(6),
+              // ),
+              child: Text(
+                'Mentra',
                 style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF0D8A50),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : const Color(0xFF0F172A),
+                  letterSpacing: -0.3,
                 ),
               ),
             ),
+            const SizedBox(width: 4),
 
             const Spacer(),
 
