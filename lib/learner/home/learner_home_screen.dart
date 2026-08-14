@@ -202,10 +202,11 @@ class _LearnerHomeState extends State<LearnerHome> {
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: 285,
-        maxHeight: MediaQuery.of(context).size.height - 32,
+        maxHeight: MediaQuery.of(context).size.height,
       ),
       child: Container(
         width: 285,
+        height: MediaQuery.of(context).size.height - 32,
         margin: const EdgeInsets.symmetric(
           vertical: 16,
         ),
@@ -401,17 +402,9 @@ class _LearnerHomeState extends State<LearnerHome> {
                 // YOUR PROGRESS
                 // --------------------------------------------------
 
-                _accessToken.isEmpty
-                    ? const SizedBox(
-                        height: 100,
-                        child: Center(
-                          child:
-                              CircularProgressIndicator(),
-                        ),
-                      )
-                    : ProgressBarView(
-                        accessToken: _accessToken,
-                      ),
+                ProgressBarView(
+                  accessToken: _accessToken,
+                ),
 
                 const SizedBox(height: 16),
 
