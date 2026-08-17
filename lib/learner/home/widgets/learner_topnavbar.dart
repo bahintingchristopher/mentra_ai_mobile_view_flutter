@@ -119,12 +119,12 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 2),
 
              // ALMA Logo
             Container(
-              width: 38,
-              height: 22,
+              width: 30,
+              height: 26,
               padding: const EdgeInsets.all(1),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -137,7 +137,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                     const Icon(Icons.school, size: 16, color: Color(0xFF0284C7)),
               ),
             ),
-             const SizedBox(width: 8),
+             const SizedBox(width: 2),
 
             // Mentra Title
             Container(
@@ -152,7 +152,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
               child: Text(
                 'Mentra',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: Theme.of(context).brightness == Brightness.dark
                       ? Colors.white
@@ -161,7 +161,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
                 ),
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 2),
 
             const Spacer(),
 

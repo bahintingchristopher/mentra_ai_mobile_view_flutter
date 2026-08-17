@@ -56,35 +56,40 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                   ),
                   const SizedBox(height: 24),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    // mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      OutlinedButton(
-                        onPressed: _controller.resetFields,
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 12),
-                      ElevatedButton(
-                        onPressed: _controller.isLoading
-                            ? null
-                            : () async {
-                                bool success = await _controller.submitPasswordChange();
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        success
-                                            ? 'Password changed successfully!'
-                                            : 'Passwords do not match or failed.',
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF38BDF8),
+                        Expanded(
+                          child: OutlinedButton(
+                              onPressed: _controller.resetFields,
+                              child: const Text('Cancel'),
+                            ),
+                        ),
+                        
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton(
+                              onPressed: _controller.isLoading
+                                  ? null
+                                  : () async {
+                                      bool success = await _controller.submitPasswordChange();
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              success
+                                                  ? 'Password changed successfully!'
+                                                  : 'Passwords do not match or failed.',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF38BDF8),
                         ),
                         child: const Text('Change Password'),
                       ),
+                            ),
                     ],
                   ),
                 ],

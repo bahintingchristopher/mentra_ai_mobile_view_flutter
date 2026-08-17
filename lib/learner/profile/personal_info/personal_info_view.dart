@@ -52,7 +52,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 30,
+                        radius: 25,
                         backgroundColor: const Color(0xFF38BDF8),
                         child: Text(
                           _controller.firstNameController.text.isNotEmpty
@@ -145,7 +145,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                         child: const Text('Cancel'),
                       ),
 
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 4),
 
                       ElevatedButton(
                         onPressed: () async {
@@ -163,6 +163,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
+                          // minimumSize: const Size (120, 40),
                           backgroundColor: const Color(0xFF38BDF8),
                         ),
                         child: const Text('Save Changes'),

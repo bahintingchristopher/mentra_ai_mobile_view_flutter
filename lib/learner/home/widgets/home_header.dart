@@ -22,54 +22,61 @@ class HomeHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title and Subtitle Text
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isFeedSelected ? 'Your Feed' : 'Your\nMicrotrainings',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface, // Dark slate in light mode, white in dark mode
-                height: 1.1,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              isFeedSelected
-                  ? 'Updates and content from\nyour organization.'
-                  : 'Browse assigned microtrainings\nby status and category.',
-              style: TextStyle(
-                fontSize: 13,
-                color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-              ),
-            ),
-          ],
-        ),
-
-        // Toggle Switch Pill
-        Container(
-          padding: const EdgeInsets.all(3),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF131822) : const Color(0xFFE2E8F0),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildPillButton(
-                context: context,
-                label: 'Microtrainings',
-                isSelected: !isFeedSelected,
-                onTap: onSelectMicrotrainings,
+              Text(
+                isFeedSelected ? 'Your Feed' : 'Your\nMicrotrainings',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                  height: 1.1,
+                ),
               ),
-              _buildPillButton(
-                context: context,
-                label: 'Feed',
-                isSelected: isFeedSelected,
-                onTap: onSelectFeed,
+              const SizedBox(height: 6),
+              Text(
+                isFeedSelected
+                    ? 'Updates and content from\nyour organization.'
+                    : 'Browse assigned microtrainings\nby status and category.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                ),
               ),
             ],
+          ),
+        ),
+
+        const SizedBox(width: 8),
+
+        // Toggle Switch Pill
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF131822) : const Color(0xFFE2E8F0),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildPillButton(
+                  context: context,
+                  label: 'Microtrainings',
+                  isSelected: !isFeedSelected,
+                  onTap: onSelectMicrotrainings,
+                ),
+                _buildPillButton(
+                  context: context,
+                  label: 'Feed',
+                  isSelected: isFeedSelected,
+                  onTap: onSelectFeed,
+                ),
+              ],
+            ),
           ),
         ),
       ],
