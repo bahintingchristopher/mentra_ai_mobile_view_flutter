@@ -59,6 +59,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                     // mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                         Expanded(
+                          flex: 4, //cancel gets 3/8 of space
                           child: OutlinedButton(
                               onPressed: _controller.resetFields,
                               child: const Text('Cancel'),
@@ -67,6 +68,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                         
                             const SizedBox(width: 12),
                             Expanded(
+                              flex: 5, //change password get 5/8 of space
                               child: ElevatedButton(
                               onPressed: _controller.isLoading
                                   ? null
@@ -87,7 +89,7 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF38BDF8),
                         ),
-                        child: const Text('Change Password'),
+                        child: const Text('Confirm'),
                       ),
                             ),
                     ],

@@ -9,33 +9,31 @@ class ProfileSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark ? const Color(0xFF0D1322) : const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? const Color(0xFF434B5E) : Colors.white,
           elevation: 0,
-          title: const Text(
+          title: Text(
             'Profile Settings',
             style: TextStyle(
-              color: Color(0xFF0F172A),
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
               fontWeight: FontWeight.bold,
             ),
           ),
-          // actions: [
-          //   TextButton(
-          //     onPressed: () => Navigator.pop(context),
-          //     child: const Text('Back to Dashboard'),
-          //   ),
-          // ],
-          bottom: const TabBar(
+          bottom: TabBar(
             isScrollable: true,
-            labelColor: Color(0xFF38BDF8),
-            unselectedLabelColor: Color(0xFF64748B),
-            indicatorColor: Color(0xFF38BDF8),
+            labelColor: const Color(0xFF38BDF8),
+            unselectedLabelColor: isDark
+                ? const Color(0xFF94A3B8)
+                : const Color(0xFF64748B),
+            indicatorColor: const Color(0xFF38BDF8),
             indicatorWeight: 3,
-            tabs: [
+            tabs: const [
               Tab(text: 'Personal Information'),
               Tab(text: 'Change Password'),
               Tab(text: 'Notifications'),
