@@ -4,22 +4,24 @@ import 'personal_info_service.dart';
 
 class PersonalInfoController extends ChangeNotifier {
   final PersonalInfoService _service;
-
   PersonalInfoModel? info;
   bool isLoading = false;
+  bool _disposed = false;
 
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
 
- PersonalInfoController(): _service = PersonalInfoService();
+  PersonalInfoController() : _service = PersonalInfoService();
 
   Future<void> loadProfileData() async {
     isLoading = true;
     notifyListeners();
 
     info = await _service.fetchPersonalInfo();
+
+    if (_disposed) return;
 
     if (info != null) {
       firstNameController.text = info!.firstName;
@@ -47,6 +49,8 @@ class PersonalInfoController extends ChangeNotifier {
 
     final success = await _service.updatePersonalInfo(updatedModel);
 
+    if (_disposed) return false;
+
     if (success) {
       info = updatedModel;
     }
@@ -59,6 +63,7 @@ class PersonalInfoController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();

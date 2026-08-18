@@ -17,8 +17,7 @@ class PersonalInfoService {
     final accessToken = await _getToken();
   
     if (accessToken == null) {
-      // print('No access token found.');
-      return null;
+        return null;
     }
 
     try {
@@ -29,9 +28,6 @@ class PersonalInfoService {
           'Content-Type': 'application/json',
         },
       );
-
-      // print('Fetch profile status: ${response.statusCode}');
-      // print('Fetch profile response: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -47,8 +43,7 @@ class PersonalInfoService {
 
       return null;
     } catch (e) {
-      // print('Error fetching profile: $e');
-      return null;
+       return null;
     }
   }
 
@@ -58,8 +53,7 @@ class PersonalInfoService {
     final accessToken = await _getToken();
 
     if (accessToken == null) {
-      // print('No access token found.');
-      return false;
+         return false;
     }
 
     try {
@@ -76,14 +70,10 @@ class PersonalInfoService {
           'phone_number': model.phoneNumber,
         }),
       );
-
-      // print('Update profile status: ${response.statusCode}');
-      // print('Update profile response: ${response.body}');
-
+ 
       return response.statusCode == 200;
     } catch (e) {
-      // print('Error updating profile: $e');
-      return false;
+        return false;
     }
   }
 }

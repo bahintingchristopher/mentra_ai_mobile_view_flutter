@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+// import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
@@ -36,12 +36,10 @@ class NotificationService {
           return NotificationModel.fromJson(itemMap);
         }).toList();
       } else {
-        // print('Failed to load notifications. Status Code: ${response.statusCode}');
         return [];
       }
-   } catch (e, stack) {
-      debugPrint('Error parsing notifications: $e');
-      debugPrint(stack.toString());
+   } catch (e) {
+         
       return [];
     }
   }
@@ -60,8 +58,7 @@ class NotificationService {
 
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      // print('Error marking notifications as read: $e');
-      return false;
+     return false;
     }
   }
 }

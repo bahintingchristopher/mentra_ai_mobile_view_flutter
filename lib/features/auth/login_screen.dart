@@ -15,7 +15,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({
     super.key,
     this.initialError,
-    this.isDemo = true,
+    this.isDemo = false,
   });
 
   @override
@@ -43,12 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = widget.initialError;
     }
 
-    if (widget.isDemo) {
-      _usernameController.text = 'big_learner';
-      _passwordController.text = 'pass';
-    }
-
-    _fetchSSOProviders();
+     _fetchSSOProviders();
   }
 
   Future<void> _fetchSSOProviders() async {

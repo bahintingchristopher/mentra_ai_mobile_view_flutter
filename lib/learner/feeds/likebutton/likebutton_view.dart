@@ -63,7 +63,7 @@ class _LikeViewState extends State<LikeView> {
             // Tell FeedPostCard that the reaction changed.
             widget.onReactionChanged?.call(reaction);
           } catch (e) {
-            // print('Reaction failed: $e');
+            //
           }
         }
 

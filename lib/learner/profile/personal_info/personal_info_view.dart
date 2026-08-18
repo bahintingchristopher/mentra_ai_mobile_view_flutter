@@ -25,6 +25,8 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
@@ -42,13 +44,19 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.grey.shade200),
+              side: BorderSide(
+                color: isDark
+                    ? const Color(0xFF334155)
+                    : Colors.grey.shade200,
+              ),
             ),
+            color: isDark ? const Color(0xFF1E293B) : Colors.white,
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Profile Header
                   Row(
                     children: [
                       CircleAvatar(
@@ -67,7 +75,7 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -75,11 +83,18 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF0F172A),
                             ),
                           ),
                           Text(
                             'Your profile information',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(
+                              color: isDark
+                                  ? const Color(0xFF94A3B8)
+                                  : Colors.grey,
+                            ),
                           ),
                         ],
                       ),
@@ -88,53 +103,133 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
 
                   const SizedBox(height: 24),
 
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _controller.firstNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'First Name',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _controller.lastNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Last Name',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
+                  // First Name
                   TextFormField(
-                    controller: _controller.emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      border: OutlineInputBorder(),
+                    controller: _controller.firstNameController,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'First Name',
+                      labelStyle: TextStyle(
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xFF38BDF8), width: 2),
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 16),
 
+                  // Last Name
+                  TextFormField(
+                    controller: _controller.lastNameController,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Last Name',
+                      labelStyle: TextStyle(
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xFF38BDF8), width: 2),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Email
+                  TextFormField(
+                    controller: _controller.emailController,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xFF38BDF8), width: 2),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Phone Number
                   TextFormField(
                     controller: _controller.phoneController,
-                    decoration: const InputDecoration(
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
+                    decoration: InputDecoration(
                       labelText: 'Phone Number',
                       helperText: 'Optional',
-                      border: OutlineInputBorder(),
+                      labelStyle: TextStyle(
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                      helperStyle: TextStyle(
+                        color: isDark
+                            ? const Color(0xFF94A3B8)
+                            : const Color(0xFF64748B),
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFCBD5E1),
+                        ),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xFF38BDF8), width: 2),
+                      ),
                     ),
                   ),
 
                   const SizedBox(height: 24),
 
+                  // Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -142,16 +237,22 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                         onPressed: () {
                           _controller.loadProfileData();
                         },
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(
+                            color: isDark
+                                ? const Color(0xFF94A3B8)
+                                : const Color(0xFFCBD5E1),
+                          ),
+                          foregroundColor: isDark
+                              ? const Color(0xFF94A3B8)
+                              : const Color(0xFF64748B),
+                        ),
                         child: const Text('Cancel'),
                       ),
-
                       const SizedBox(width: 4),
-
                       ElevatedButton(
                         onPressed: () async {
-                          final success =
-                              await _controller.saveChanges();
-
+                          final success = await _controller.saveChanges();
                           if (context.mounted && success) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -163,8 +264,12 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          // minimumSize: const Size (120, 40),
-                          backgroundColor: const Color(0xFF38BDF8),
+                          backgroundColor: isDark
+                              ? const Color.fromARGB(255, 30, 49, 94)
+                              : const Color(0xFF38BDF8),
+                          foregroundColor: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                         ),
                         child: const Text('Save Changes'),
                       ),
