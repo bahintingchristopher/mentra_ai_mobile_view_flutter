@@ -1,13 +1,12 @@
 import 'dart:convert';
-
+import 'package:mentra_mobile_view/utils/api_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
 
 import 'personal_info_model.dart';
 
 class PersonalInfoService {
-    static const String baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1';
+    static const String baseUrl = ApiConfig.apiBaseUrl;
 
   Future<String?> _getToken() async {
     return await StorageService.getAccessToken();

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class LikeService {
-  static const String baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1';
+ static const String baseUrl = ApiConfig.apiBaseUrl;
 
   static Future<void> sendReaction({
     required int postId,

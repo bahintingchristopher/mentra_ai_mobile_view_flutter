@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'comment_model.dart';
+import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class CommentService {
-  static const String baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1';
+ static const String baseUrl = ApiConfig.apiBaseUrl;
 
   // ============================================================
   // GET COMMENTS

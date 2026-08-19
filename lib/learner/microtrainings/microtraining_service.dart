@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class MicrotrainingService {
-  // Base URL matching your staging server
-  static const String _baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1';
+   static const String _baseUrl = ApiConfig.apiBaseUrl;
 
   /// Fetches microtrainings for the authenticated learner.
   /// 

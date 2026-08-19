@@ -1,19 +1,23 @@
-class MicrotrainingModel {
+﻿class MicrotrainingModel {
+  final int id;
   final List<String> categories;
   final String title;
   final String status;
   final String pendingStatusText;
   final String? description;
+  final String videoUrl;
   final int questionsCount;
   final String assignedDate;
   final String noticeMessage;
 
   MicrotrainingModel({
+    required this.id,
     required this.categories,
     required this.title,
     required this.status,
     required this.pendingStatusText,
     this.description,
+    required this.videoUrl,
     required this.questionsCount,
     required this.assignedDate,
     required this.noticeMessage,
@@ -49,12 +53,21 @@ class MicrotrainingModel {
       calculatedQuestionsCount = int.tryParse(json['questions']) ?? 0;
     }
 
+    int parsedId = 0;
+    if (json['id'] is int) {
+      parsedId = json['id'];
+    } else if (json['id'] is String) {
+      parsedId = int.tryParse(json['id']) ?? 0;
+    }
+
     return MicrotrainingModel(
+      id: parsedId,
       categories: parsedCategories,
       title: json['title'] ?? '',
       status: json['completion_status'] ?? json['status'] ?? 'Pending',
       pendingStatusText: json['pending_status_text'] ?? 'Pending completion',
       description: json['description'] ?? json['content'],
+      videoUrl: json['video_url'] ?? '',
       questionsCount: calculatedQuestionsCount,
       assignedDate: json['assigned_date'] ?? json['created_at'] ?? '',
       noticeMessage: json['notice_message'] ?? '',

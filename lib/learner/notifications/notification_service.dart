@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
+import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class NotificationService {
-  static const String _baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1/learner/notifications';
+   static const String _baseUrl = '${ApiConfig.apiBaseUrl}/learner/notifications';
 
   static Future<List<NotificationModel>> fetchNotifications() async {
     try {

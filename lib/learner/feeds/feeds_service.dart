@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/learner/feeds/feed_model.dart';
+import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class ApiService {
-  static const String baseUrl =
-      'https://mentra-training-portal-be-staging.azurewebsites.net/api/v1';
+  static const String baseUrl = ApiConfig.apiBaseUrl;
 
   static Future<List<FeedPost>> fetchFeedPosts({
     required String accessToken,

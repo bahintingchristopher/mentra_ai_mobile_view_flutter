@@ -55,8 +55,6 @@ class _CommentViewState extends State<CommentView> {
         loading = false;
       });
     } catch (e) {
-
-
       if (!mounted) return;
 
       setState(() {
@@ -88,7 +86,7 @@ class _CommentViewState extends State<CommentView> {
 
       await loadComments();
     } catch (e) {
-      // 
+      //
     } finally {
       if (mounted) {
         setState(() {
@@ -116,12 +114,14 @@ class _CommentViewState extends State<CommentView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SafeArea(
       child: Container(
         height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : Colors.white,
+          borderRadius: const BorderRadius.vertical(
             top: Radius.circular(20),
           ),
         ),
@@ -134,13 +134,13 @@ class _CommentViewState extends State<CommentView> {
               padding: const EdgeInsets.fromLTRB(20, 18, 12, 10),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'Comments',
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF0F172A),
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
                       ),
                     ),
                   ),
@@ -149,16 +149,19 @@ class _CommentViewState extends State<CommentView> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close,
-                      color: Color(0xFF64748B),
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+            ),
 
             // =========================
             // COMMENTS
@@ -169,11 +172,11 @@ class _CommentViewState extends State<CommentView> {
                       child: CircularProgressIndicator(),
                     )
                   : comments.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
                             'No comments yet.',
                             style: TextStyle(
-                              color: Color(0xFF64748B),
+                              color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                             ),
                           ),
                         )
@@ -183,7 +186,7 @@ class _CommentViewState extends State<CommentView> {
                           itemBuilder: (context, index) {
                             final comment = comments[index];
 
-                            return _buildComment(comment);
+                            return _buildComment(comment, isDark);
                           },
                         ),
             ),
@@ -198,13 +201,13 @@ class _CommentViewState extends State<CommentView> {
                 20,
                 20,
               ),
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E293B) : Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x14000000),
+                    color: const Color(0x14000000),
                     blurRadius: 8,
-                    offset: Offset(0, -2),
+                    offset: const Offset(0, -2),
                   ),
                 ],
               ),
@@ -213,23 +216,26 @@ class _CommentViewState extends State<CommentView> {
                   TextField(
                     controller: textController,
                     maxLines: 3,
+                    style: TextStyle(
+                      color: isDark ? Colors.white : const Color(0xFF0F172A),
+                    ),
                     decoration: InputDecoration(
                       hintText:
                           'Write a comment... (use @ to mention someone)',
-                      hintStyle: const TextStyle(
-                        color: Color(0xFF94A3B8),
+                      hintStyle: TextStyle(
+                        color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF94A3B8),
                       ),
                       contentPadding: const EdgeInsets.all(14),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFCBD5E1),
+                        borderSide: BorderSide(
+                          color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
                         ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: Color(0xFFCBD5E1),
+                        borderSide: BorderSide(
+                          color: isDark ? const Color(0xFF334155) : const Color(0xFFCBD5E1),
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -288,7 +294,7 @@ class _CommentViewState extends State<CommentView> {
   // =========================
   // SINGLE COMMENT
   // =========================
-  Widget _buildComment(CommentModel comment) {
+  Widget _buildComment(CommentModel comment, bool isDark) {
     final name = comment.authorName;
 
     return Container(
@@ -299,11 +305,11 @@ class _CommentViewState extends State<CommentView> {
           // Avatar
           CircleAvatar(
             radius: 21,
-            backgroundColor: const Color(0xFFE2E8F0),
+            backgroundColor: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
             child: Text(
               getInitials(name),
-              style: const TextStyle(
-                color: Color(0xFF475569),
+              style: TextStyle(
+                color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF475569),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -316,7 +322,7 @@ class _CommentViewState extends State<CommentView> {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: isDark ? const Color(0xFF131822) : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
@@ -327,16 +333,13 @@ class _CommentViewState extends State<CommentView> {
                       Expanded(
                         child: Text(
                           name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF0F172A),
+                            color: isDark ? Colors.white : const Color(0xFF0F172A),
                           ),
                         ),
                       ),
-
-                      // We can add formatted date here
-                      // when your CommentModel exposes createdAt.
                     ],
                   ),
 
@@ -344,10 +347,10 @@ class _CommentViewState extends State<CommentView> {
 
                   Text(
                     comment.content,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       height: 1.4,
-                      color: Color(0xFF334155),
+                      color: isDark ? const Color(0xFFE2E8F0) : const Color(0xFF334155),
                     ),
                   ),
 
@@ -365,10 +368,10 @@ class _CommentViewState extends State<CommentView> {
                           tapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Reply',
                           style: TextStyle(
-                            color: Color(0xFF64748B),
+                            color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                             fontSize: 13,
                           ),
                         ),

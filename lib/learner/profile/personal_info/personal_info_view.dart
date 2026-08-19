@@ -233,22 +233,22 @@ class _PersonalInfoViewState extends State<PersonalInfoView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      OutlinedButton(
-                        onPressed: () {
-                          _controller.loadProfileData();
-                        },
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: isDark
-                                ? const Color(0xFF94A3B8)
-                                : const Color(0xFFCBD5E1),
-                          ),
-                          foregroundColor: isDark
-                              ? const Color(0xFF94A3B8)
-                              : const Color(0xFF64748B),
-                        ),
-                        child: const Text('Cancel'),
-                      ),
+                      // OutlinedButton(
+                      //   onPressed: () {
+                      //     _controller.loadProfileData();
+                      //   },
+                      //   style: OutlinedButton.styleFrom(
+                      //     side: BorderSide(
+                      //       color: isDark
+                      //           ? const Color(0xFF94A3B8)
+                      //           : const Color(0xFFCBD5E1),
+                      //     ),
+                      //     foregroundColor: isDark
+                      //         ? const Color(0xFF94A3B8)
+                      //         : const Color(0xFF64748B),
+                      //   ),
+                      //   child: const Text('Cancel'),
+                      // ),
                       const SizedBox(width: 4),
                       ElevatedButton(
                         onPressed: () async {
