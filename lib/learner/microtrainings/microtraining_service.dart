@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/utils/api_config.dart';
 
@@ -52,6 +52,32 @@ class MicrotrainingService {
     } catch (e) {
       // Log or rethrow error to be caught by FutureBuilder/UI
       rethrow;
+    }
+  }
+
+  /// Marks a microtraining as completed by the learner.
+  ///
+  /// TODO: Update the endpoint URL to match the actual backend API.
+  static Future<bool> markAsCompleted({
+    required String accessToken,
+    required int microtrainingId,
+  }) async {
+    final uri = Uri.parse(
+      '$_baseUrl/learner/microtrainings/$microtrainingId/mark-complete/',
+    );
+
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
+        },
+      );
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      return false;
     }
   }
 }

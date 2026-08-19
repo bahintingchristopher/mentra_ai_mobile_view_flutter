@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_card.dart';
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_model.dart';
 
@@ -7,6 +7,7 @@ class MicrotrainingView extends StatelessWidget {
   final bool loading;
   final String? error;
   final VoidCallback? onRetry;
+  final void Function(int microtrainingId)? onVideoCompleted;
 
   const MicrotrainingView({
     super.key,
@@ -14,6 +15,7 @@ class MicrotrainingView extends StatelessWidget {
     this.loading = false,
     this.error,
     this.onRetry,
+    this.onVideoCompleted,
   });
 
   @override
@@ -61,7 +63,12 @@ class MicrotrainingView extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        return MicrotrainingCard(item: items[index]);
+        return MicrotrainingCard(
+          item: items[index],
+          onVideoCompleted: onVideoCompleted != null
+              ? () => onVideoCompleted!(items[index].id)
+              : null,
+        );
       },
     );
   }

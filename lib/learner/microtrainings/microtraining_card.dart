@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_model.dart';
 
 class MicrotrainingCard extends StatelessWidget {
   final MicrotrainingModel item;
   final VoidCallback? onTap;
+  final VoidCallback? onVideoCompleted;
 
   const MicrotrainingCard({
     super.key,
     required this.item,
     this.onTap,
+    this.onVideoCompleted,
   });
 
   @override
@@ -102,6 +104,7 @@ class MicrotrainingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: MicrotrainingVideoPlayer(
                     videoUrl: item.videoUrl,
+                    onVideoCompleted: onVideoCompleted,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -200,10 +203,12 @@ class MicrotrainingCard extends StatelessWidget {
 
 class MicrotrainingVideoPlayer extends StatefulWidget {
   final String videoUrl;
+  final VoidCallback? onVideoCompleted;
 
   const MicrotrainingVideoPlayer({
     super.key,
     required this.videoUrl,
+    this.onVideoCompleted,
   });
 
   @override
@@ -217,6 +222,8 @@ class _MicrotrainingVideoPlayerState extends State<MicrotrainingVideoPlayer> {
   bool _hasError = false;
   bool _disposed = false;
   bool _controllerCreated = false;
+  bool _videoCompletionHandled = false;
+  bool _wasPlaying = false;
 
   @override
   void initState() {
@@ -229,6 +236,9 @@ class _MicrotrainingVideoPlayerState extends State<MicrotrainingVideoPlayer> {
       _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
       _controllerCreated = true;
       await _controller.initialize();
+
+      _controller.addListener(_onVideoProgress);
+
       if (!_disposed && mounted) {
         setState(() {
           _isInitialized = true;
@@ -243,10 +253,29 @@ class _MicrotrainingVideoPlayerState extends State<MicrotrainingVideoPlayer> {
     }
   }
 
+  void _onVideoProgress() {
+    if (_disposed || !mounted) return;
+
+    if (_controller.value.isPlaying) {
+      _wasPlaying = true;
+    }
+
+    if (_controller.value.isInitialized &&
+        _controller.value.position >= _controller.value.duration &&
+        !_controller.value.isPlaying &&
+        _wasPlaying &&
+        !_videoCompletionHandled) {
+      _videoCompletionHandled = true;
+      _wasPlaying = false;
+      widget.onVideoCompleted?.call();
+    }
+  }
+
   @override
   void dispose() {
     _disposed = true;
     if (_controllerCreated) {
+      _controller.removeListener(_onVideoProgress);
       _controller.dispose();
     }
     super.dispose();
@@ -324,3 +353,4 @@ class _MicrotrainingVideoPlayerState extends State<MicrotrainingVideoPlayer> {
     );
   }
 }
+

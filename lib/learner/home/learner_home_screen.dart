@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import 'package:mentra_mobile_view/learner/home/widgets/home_header.dart';
 import 'package:mentra_mobile_view/learner/home/widgets/learner_bottomnav.dart';
@@ -139,6 +139,41 @@ class _LearnerHomeState extends State<LearnerHome> {
     setState(() {
       _filteredMicrotrainings = _computeFilteredMicrotrainings();
     });
+  }
+
+  // ------------------------------------------------------------
+  // MARK VIDEO AS COMPLETED
+  // ------------------------------------------------------------
+
+  void _onVideoCompleted(int microtrainingId) async {
+    final token = await StorageService.getAccessToken();
+    final success = await MicrotrainingService.markAsCompleted(
+      accessToken: token ?? '',
+      microtrainingId: microtrainingId,
+    );
+
+    if (success && mounted) {
+      setState(() {
+        _allMicrotrainings = _allMicrotrainings.map((m) {
+          if (m.id == microtrainingId) {
+            return MicrotrainingModel(
+              id: m.id,
+              categories: m.categories,
+              title: m.title,
+              status: 'completed',
+              pendingStatusText: 'Completed',
+              description: m.description,
+              videoUrl: m.videoUrl,
+              questionsCount: m.questionsCount,
+              assignedDate: m.assignedDate,
+              noticeMessage: m.noticeMessage,
+            );
+          }
+          return m;
+        }).toList();
+        _filteredMicrotrainings = _computeFilteredMicrotrainings();
+      });
+    }
   }
 
   // ------------------------------------------------------------
@@ -665,6 +700,7 @@ class _LearnerHomeState extends State<LearnerHome> {
                     loading: _microtrainingLoading,
                     error: _microtrainingError,
                     onRetry: _loadMicrotrainings,
+                    onVideoCompleted: _onVideoCompleted,
                   ),
           ],
         ),
