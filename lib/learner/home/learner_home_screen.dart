@@ -722,6 +722,14 @@ class _LearnerHomeState extends State<LearnerHome> {
 
       appBar: LearnerTopNavbar(
         onMenuPressed: _openLearnerDrawer,
+        onLogoPressed: () {
+          setState(() {
+            _currentNavIndex = 0;
+            _isFeedSelected = true;
+          });
+          _loadMicrotrainings();
+          _loadFeed();
+        },
       ),
 
       body: IndexedStack(
@@ -740,3 +748,5 @@ class _LearnerHomeState extends State<LearnerHome> {
     );
   }
 }
+
+

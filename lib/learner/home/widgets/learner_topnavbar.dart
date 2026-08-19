@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
 import 'package:mentra_mobile_view/features/auth/login_screen.dart';
@@ -11,6 +11,7 @@ class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onThemeToggle;
   final VoidCallback? onProfilePressed;
   final VoidCallback? onSignOutPressed;
+  final VoidCallback? onLogoPressed;
   final bool isDarkMode;
 
   const LearnerTopNavbar({
@@ -20,6 +21,7 @@ class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
     this.onProfilePressed,
     this.onSignOutPressed,
     this.isDarkMode = false,
+    this.onLogoPressed,
   });
 
   @override
@@ -30,7 +32,6 @@ class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
-  // 1. Single source of truth for notifications
   final NotificationController _notificationController = NotificationController();
   Timer? _poller;
 
@@ -39,7 +40,6 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
     super.initState();
     _notificationController.loadNotifications();
 
-    // Poll every 30 seconds using controller
     _poller = Timer.periodic(const Duration(seconds: 30), (_) {
       _notificationController.loadNotifications();
     });
@@ -112,61 +112,63 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
             IconButton(
               icon: Icon(
                 Icons.menu,
-                color: Theme.of(context).colorScheme.onSurface, // Black in light mode, white in dark mode
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-                          onPressed: widget.onMenuPressed ?? () => Scaffold.of(context).openDrawer(),
+              onPressed: widget.onMenuPressed ?? () => Scaffold.of(context).openDrawer(),
               color: const Color(0xFF334155),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             ),
             const SizedBox(width: 2),
 
-             // ALMA Logo
-            Container(
-              width: 30,
-              height: 26,
-              padding: const EdgeInsets.all(1),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Image.asset(
-                'assets/almallc.jpg',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.school, size: 16, color: Color(0xFF0284C7)),
+            // ALMA Logo + Mentra Title (tap to go home)
+            GestureDetector(
+              onTap: widget.onLogoPressed,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 30,
+                    height: 26,
+                    padding: const EdgeInsets.all(1),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.asset(
+                      'assets/almallc.jpg',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.school, size: 16, color: Color(0xFF0284C7)),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
+                    child: Text(
+                      'Mentra',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color(0xFF0F172A),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                ],
               ),
             ),
-             const SizedBox(width: 2),
-
-            // Mentra Title
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 6,
-                vertical: 3,
-              ),
-              // decoration: BoxDecoration(
-              //   color: const Color.fromARGB(114, 71, 53, 64),
-              //   borderRadius: BorderRadius.circular(6),
-              // ),
-              child: Text(
-                'Mentra',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : const Color(0xFF0F172A),
-                  letterSpacing: -0.3,
-                ),
-              ),
-            ),
-            const SizedBox(width: 2),
 
             const Spacer(),
 
             // --- RIGHT SIDE: Actions & Controls ---
-            // Dark Mode Toggle connected to themeNotifier
+            // Dark Mode Toggle
             ValueListenableBuilder<ThemeMode>(
               valueListenable: themeNotifier,
               builder: (context, currentMode, _) {
@@ -198,7 +200,7 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
             ),
             const SizedBox(width: 4),
 
-            // Notification Bell with Controller Listener
+            // Notification Bell
             ListenableBuilder(
               listenable: _notificationController,
               builder: (context, _) {
