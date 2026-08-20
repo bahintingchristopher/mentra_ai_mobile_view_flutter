@@ -84,15 +84,19 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
 
 
   void _showNotifications(BuildContext context) {
+    final double statusBarHeight = MediaQuery.of(context).padding.top;
+
     showDialog<void>(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.35),
       builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        insetPadding: const EdgeInsets.only(top: 40, left:24, right: 24, bottom: 250),
+        insetPadding: EdgeInsets.zero,
+        alignment: Alignment.topCenter,
         child: NotificationDropdown(
           controller: _notificationController,
+          statusBarHeight: statusBarHeight,
         ),
       ),
     );
@@ -248,24 +252,6 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
               },
             ),
             const SizedBox(width: 4),
-
-            // Profile Avatar
-            GestureDetector(
-              onTap: widget.onProfilePressed,
-              child: const CircleAvatar(
-                radius: 14,
-                backgroundColor: Color(0xFF0EA5E9),
-                child: Text(
-                  'B',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 6),
 
             // Circular Logout Button
             InkWell(

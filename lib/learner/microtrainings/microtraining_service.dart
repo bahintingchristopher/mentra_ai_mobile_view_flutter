@@ -56,8 +56,6 @@ class MicrotrainingService {
   }
 
   /// Marks a microtraining as completed by the learner.
-  ///
-  /// TODO: Update the endpoint URL to match the actual backend API.
   static Future<bool> markAsCompleted({
     required String accessToken,
     required int microtrainingId,
