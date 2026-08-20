@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:mentra_mobile_view/learner/feeds/feed_post_card.dart';
 
 class FeedView extends StatefulWidget {
@@ -6,6 +6,8 @@ class FeedView extends StatefulWidget {
   final String accessToken;
   final String? sessionKey;
   final VoidCallback? onCommentAdded;
+  final int? scrollToPostId;
+  final GlobalKey? scrollKey;
 
   const FeedView({
     super.key,
@@ -13,13 +15,14 @@ class FeedView extends StatefulWidget {
     required this.accessToken,
     this.sessionKey,
     this.onCommentAdded,
+    this.scrollToPostId,
+    this.scrollKey,
   });
 
   @override
   State<FeedView> createState() => _FeedViewState();
 }
 
-// '-' in _FeedViewState is a naming convention in Dart to indicate that the class is private to the library. It means that this class can only be accessed within the file it is defined in, and not from other files. This is a common practice in Dart to encapsulate implementation details and prevent external access to certain classes or members.
 class _FeedViewState extends State<FeedView> {
   @override
   Widget build(BuildContext context) {
@@ -62,14 +65,30 @@ class _FeedViewState extends State<FeedView> {
         }
         final posts = snapshot.data!;
 
+        if (widget.scrollToPostId != null && widget.scrollKey != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (widget.scrollKey?.currentContext != null) {
+              Scrollable.ensureVisible(
+                widget.scrollKey!.currentContext!,
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+              );
+            }
+          });
+        }
+
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: posts.length,
           itemBuilder: (context, index) {
             final post = posts[index];
+            final bool shouldAttachKey = widget.scrollToPostId != null &&
+                widget.scrollKey != null &&
+                post.id == widget.scrollToPostId.toString();
 
             return FeedPostCard(
+              key: shouldAttachKey ? widget.scrollKey : null,
               post: post,
               accessToken: widget.accessToken,
               sessionKey: widget.sessionKey,
@@ -79,6 +98,5 @@ class _FeedViewState extends State<FeedView> {
         );
       },
     );
-    
   }
 }

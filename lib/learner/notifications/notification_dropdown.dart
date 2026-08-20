@@ -299,7 +299,7 @@ class NotificationDropdown extends StatelessWidget {
             typeIconColor: _typeIconColor(item.type, isDark),
             typeIconBg: _typeIconBg(item.type, isDark),
             initials: _initials(item.actorName),
-            onTap: onTap != null ? () => onTap!(item) : null,
+            onTap: onTap != null ? () { controller.markAsRead(item.id); onTap!(item); } : null,
           );
         },
       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import 'package:mentra_mobile_view/learner/home/widgets/home_header.dart';
 import 'package:mentra_mobile_view/learner/home/widgets/learner_bottomnav.dart';
@@ -13,6 +13,8 @@ import 'package:mentra_mobile_view/learner/microtrainings/microtraining_view.dar
 import 'package:mentra_mobile_view/learner/feeds/feed_model.dart';
 import 'package:mentra_mobile_view/learner/progress_bar/progress_bar_view.dart';
 import 'package:mentra_mobile_view/learner/profile/profile_settings_view.dart';
+import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
+import 'package:mentra_mobile_view/learner/microtrainings/quiz_screen/quiz_view.dart';
 
 class LearnerHome extends StatefulWidget {
   const LearnerHome({super.key});
@@ -39,6 +41,10 @@ class _LearnerHomeState extends State<LearnerHome> {
   bool _microtrainingLoading = false;
   String? _microtrainingError;
 
+  int? _scrollToPostId;
+  int? _scrollToMicrotrainingId;
+  GlobalKey? _scrollKey;
+
   @override
   void initState() {
     super.initState();
@@ -51,6 +57,39 @@ class _LearnerHomeState extends State<LearnerHome> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  // ------------------------------------------------------------
+  // NOTIFICATION TAP HANDLER
+  // ------------------------------------------------------------
+
+  void _handleNotificationTap(NotificationModel notification) {
+    if (notification.type == 'post_created' && notification.postId != null) {
+      setState(() {
+        _isFeedSelected = true;
+        _scrollToPostId = notification.postId;
+        _scrollToMicrotrainingId = null;
+        _scrollKey = GlobalKey();
+      });
+    } else if (notification.microtrainingId != null) {
+      setState(() {
+        _isFeedSelected = false;
+        _scrollToMicrotrainingId = notification.microtrainingId;
+        _scrollToPostId = null;
+        _scrollKey = GlobalKey();
+      });
+    }
+
+    // Reset scroll target after the scroll completes
+    Future.delayed(const Duration(milliseconds: 600), () {
+      if (mounted) {
+        setState(() {
+          _scrollToPostId = null;
+          _scrollToMicrotrainingId = null;
+          _scrollKey = null;
+        });
+      }
+    });
   }
 
   // ------------------------------------------------------------
@@ -697,6 +736,8 @@ class _LearnerHomeState extends State<LearnerHome> {
                     onCommentAdded: () {
                       _loadFeed();
                     },
+                    scrollToPostId: _scrollToPostId,
+                    scrollKey: _scrollKey,
                   )
                 : MicrotrainingView(
                     items: _filteredMicrotrainings,
@@ -704,6 +745,15 @@ class _LearnerHomeState extends State<LearnerHome> {
                     error: _microtrainingError,
                     onRetry: _loadMicrotrainings,
                     onVideoCompleted: _onVideoCompleted,
+                    onStartQuiz: (item) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => MicrotrainingQuizScreen(item: item),
+                        ),
+                      );
+                    },
+                    scrollToMicrotrainingId: _scrollToMicrotrainingId,
+                    scrollKey: _scrollKey,
                   ),
           ],
         ),
@@ -720,9 +770,6 @@ class _LearnerHomeState extends State<LearnerHome> {
       backgroundColor:
           theme.scaffoldBackgroundColor,
 
-      // IMPORTANT:
-      // We are NOT using Scaffold.drawer anymore.
-
       appBar: LearnerTopNavbar(
         onMenuPressed: _openLearnerDrawer,
         onLogoPressed: () {
@@ -733,6 +780,7 @@ class _LearnerHomeState extends State<LearnerHome> {
           _loadMicrotrainings();
           _loadFeed();
         },
+        onNotificationTap: _handleNotificationTap,
       ),
 
       body: IndexedStack(
@@ -751,5 +799,3 @@ class _LearnerHomeState extends State<LearnerHome> {
     );
   }
 }
-
-

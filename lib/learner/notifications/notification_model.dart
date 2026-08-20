@@ -1,10 +1,12 @@
-class NotificationModel {
+﻿class NotificationModel {
   final int id;
   final String type;
   final bool isRead;
   final String createdAt;
   final String actorName;
   final String title;
+  final int? postId;
+  final int? microtrainingId;
 
   NotificationModel({
     required this.id,
@@ -13,6 +15,8 @@ class NotificationModel {
     required this.createdAt,
     required this.actorName,
     required this.title,
+    this.postId,
+    this.microtrainingId,
   });
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
@@ -44,6 +48,21 @@ class NotificationModel {
       displayTitle = json['title'].toString();
     }
 
+    // 3. Extract entity IDs for navigation
+    int? extractedPostId;
+    if (json['post'] is Map && json['post']['id'] != null) {
+      extractedPostId = json['post']['id'] is int
+          ? json['post']['id'] as int
+          : int.tryParse(json['post']['id'].toString());
+    }
+
+    int? extractedMicrotrainingId;
+    if (json['microtraining'] is Map && json['microtraining']['id'] != null) {
+      extractedMicrotrainingId = json['microtraining']['id'] is int
+          ? json['microtraining']['id'] as int
+          : int.tryParse(json['microtraining']['id'].toString());
+    }
+
     return NotificationModel(
       id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       type: notificationType,
@@ -51,6 +70,8 @@ class NotificationModel {
       createdAt: json['created_at']?.toString() ?? '',
       actorName: actor,
       title: displayTitle,
+      postId: extractedPostId,
+      microtrainingId: extractedMicrotrainingId,
     );
   }
 }

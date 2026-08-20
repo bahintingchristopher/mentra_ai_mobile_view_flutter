@@ -1,12 +1,11 @@
-import 'dart:convert';
-// import 'package:flutter/foundation.dart';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
 import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart';
 import 'package:mentra_mobile_view/utils/api_config.dart';
 
 class NotificationService {
-   static const String _baseUrl = '${ApiConfig.apiBaseUrl}/learner/notifications';
+  static const String _baseUrl = '${ApiConfig.apiBaseUrl}/learner/notifications';
 
   static Future<List<NotificationModel>> fetchNotifications() async {
     try {
@@ -38,8 +37,7 @@ class NotificationService {
       } else {
         return [];
       }
-   } catch (e) {
-         
+    } catch (e) {
       return [];
     }
   }
@@ -58,7 +56,25 @@ class NotificationService {
 
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-     return false;
+      return false;
+    }
+  }
+
+  static Future<bool> markAsRead(int notificationId) async {
+    try {
+      final token = await StorageService.getAccessToken();
+
+      final response = await http.patch(
+        Uri.parse('$_baseUrl/$notificationId/read/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -4,6 +4,7 @@ import 'package:mentra_mobile_view/learner/shared/services/storage_service.dart'
 import 'package:mentra_mobile_view/features/auth/login_screen.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_dropdown.dart';
 import 'package:mentra_mobile_view/learner/notifications/notification_controller.dart';
+import 'package:mentra_mobile_view/learner/notifications/notification_model.dart';
 import 'package:mentra_mobile_view/learner/shared/theme_controller.dart';
 
 class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
@@ -12,6 +13,7 @@ class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onProfilePressed;
   final VoidCallback? onSignOutPressed;
   final VoidCallback? onLogoPressed;
+  final ValueChanged<NotificationModel>? onNotificationTap;
   final bool isDarkMode;
 
   const LearnerTopNavbar({
@@ -22,6 +24,7 @@ class LearnerTopNavbar extends StatefulWidget implements PreferredSizeWidget {
     this.onSignOutPressed,
     this.isDarkMode = false,
     this.onLogoPressed,
+    this.onNotificationTap,
   });
 
   @override
@@ -82,7 +85,6 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
     );
   }
 
-
   void _showNotifications(BuildContext context) {
     final double statusBarHeight = MediaQuery.of(context).padding.top;
 
@@ -97,6 +99,10 @@ class _LearnerTopNavbarState extends State<LearnerTopNavbar> {
         child: NotificationDropdown(
           controller: _notificationController,
           statusBarHeight: statusBarHeight,
+          onTap: (notification) {
+            Navigator.of(dialogContext).pop();
+            widget.onNotificationTap?.call(notification);
+          },
         ),
       ),
     );

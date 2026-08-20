@@ -10,6 +10,8 @@ class MicrotrainingView extends StatelessWidget {
   final void Function(int microtrainingId)? onVideoCompleted;
   final void Function(MicrotrainingModel item)? onOpenForum;
   final void Function(MicrotrainingModel item)? onStartQuiz;
+  final int? scrollToMicrotrainingId;
+  final GlobalKey? scrollKey;
 
   const MicrotrainingView({
     super.key,
@@ -20,6 +22,8 @@ class MicrotrainingView extends StatelessWidget {
     this.onVideoCompleted,
     this.onOpenForum,
     this.onStartQuiz,
+    this.scrollToMicrotrainingId,
+    this.scrollKey,
   });
 
   @override
@@ -62,13 +66,30 @@ class MicrotrainingView extends StatelessWidget {
       );
     }
 
+    if (scrollToMicrotrainingId != null && scrollKey != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (scrollKey?.currentContext != null) {
+          Scrollable.ensureVisible(
+            scrollKey!.currentContext!,
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
+          );
+        }
+      });
+    }
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
+        final bool shouldAttachKey = scrollToMicrotrainingId != null &&
+            scrollKey != null &&
+            item.id == scrollToMicrotrainingId;
+
         return MicrotrainingCard(
+          key: shouldAttachKey ? scrollKey : null,
           item: item,
           onVideoCompleted: onVideoCompleted != null
               ? () => onVideoCompleted!(item.id)
