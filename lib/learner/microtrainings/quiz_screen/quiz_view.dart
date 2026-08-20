@@ -20,6 +20,8 @@ class MicrotrainingQuizScreen extends StatefulWidget {
 
 class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
   late final QuizController _controller;
+  final Map<int, TextEditingController> _textControllers = {};
+  final Map<int, Map<String, String>> _matchingSelections = {};
   Timer? _freezeTimer;
 
   @override
@@ -63,11 +65,60 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
     });
   }
 
+  TextEditingController _getTextController(int questionId) {
+    return _textControllers.putIfAbsent(
+      questionId,
+      () {
+        final ctrl = TextEditingController();
+        ctrl.addListener(() {
+          final text = ctrl.text.trim();
+          if (text.isNotEmpty) {
+            _controller.selectAnswer(questionId, text);
+          }
+        });
+        return ctrl;
+      },
+    );
+  }
+
+  Map<String, String> _getMatchingSelections(int questionId) {
+    return _matchingSelections.putIfAbsent(questionId, () => {});
+  }
+
+  List<String> _parseLeftItems(dynamic options) {
+    if (options is Map && options.containsKey('left')) {
+      return (options['left'] as List).map((e) => e.toString()).toList();
+    }
+    if (options is List) {
+      return options.map((e) {
+        if (e is Map) return (e['left'] ?? e['term'] ?? e['source'] ?? e.toString()).toString();
+        return e.toString();
+      }).toList();
+    }
+    return [];
+  }
+
+  List<String> _parseRightItems(dynamic options) {
+    if (options is Map && options.containsKey('right')) {
+      return (options['right'] as List).map((e) => e.toString()).toList();
+    }
+    if (options is List) {
+      return options.map((e) {
+        if (e is Map) return (e['right'] ?? e['definition'] ?? e['target'] ?? e.toString()).toString();
+        return e.toString();
+      }).toList();
+    }
+    return [];
+  }
+
   @override
   void dispose() {
     _freezeTimer?.cancel();
     _controller.removeListener(_onControllerUpdate);
     _controller.dispose();
+    for (final ctrl in _textControllers.values) {
+      ctrl.dispose();
+    }
     super.dispose();
   }
 
@@ -183,26 +234,13 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
                           _controller.displayQuestions.length, (qIndex) {
                         final question =
                             _controller.displayQuestions[qIndex];
+                        final currentAnswer =
+                            _controller.getAnswerForQuestion(question.id);
                         return _buildQuestionCard(
                           context,
                           questionNumber: qIndex + 1,
                           question: question,
-                          selectedOptionIndex:
-                              _controller.getAnswerForQuestion(question.id),
-                          onOptionSelected: (optIndex) {
-                            if (question.type == 'true_false') {
-                              _controller.selectAnswer(
-                                  question.id, optIndex == 0);
-                            } else if (question.type == 'yes_no') {
-                              _controller.selectAnswer(
-                                  question.id,
-                                  optIndex == 0 ? 'yes' : 'no');
-                            } else {
-                              _controller.selectAnswer(
-                                  question.id,
-                                  question.options![optIndex]);
-                            }
-                          },
+                          currentAnswer: currentAnswer,
                         );
                       }),
                       const SizedBox(height: 20),
@@ -330,16 +368,52 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
     BuildContext context, {
     required int questionNumber,
     required QuizQuestionModel question,
-    required dynamic selectedOptionIndex,
-    required ValueChanged<int> onOptionSelected,
+    required dynamic currentAnswer,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    List<String> displayOptions = question.options ?? [];
+    switch (question.type) {
+      case 'matching':
+        return _buildMatchingCard(context,
+            questionNumber: questionNumber,
+            question: question,
+            isDark: isDark);
+      case 'short_answer':
+      case 'scenario':
+        return _buildTextInputCard(context,
+            questionNumber: questionNumber,
+            question: question,
+            currentAnswer: currentAnswer,
+            isDark: isDark);
+      default:
+        return _buildOptionCard(context,
+            questionNumber: questionNumber,
+            question: question,
+            currentAnswer: currentAnswer,
+            isDark: isDark);
+    }
+  }
+
+  Widget _buildOptionCard(
+    BuildContext context, {
+    required int questionNumber,
+    required QuizQuestionModel question,
+    required dynamic currentAnswer,
+    required bool isDark,
+  }) {
+    List<String> displayOptions = [];
     if (question.type == 'true_false') {
       displayOptions = ['True', 'False'];
     } else if (question.type == 'yes_no') {
       displayOptions = ['Yes', 'No'];
+    } else if (question.options is List) {
+      displayOptions = (question.options as List).map((e) => e.toString()).toList();
+    }
+
+    bool isSelected(int optIndex) {
+      if (question.type == 'true_false') return currentAnswer == (optIndex == 0);
+      if (question.type == 'yes_no') return currentAnswer == (optIndex == 0 ? 'yes' : 'no');
+      return currentAnswer == optIndex;
     }
 
     return Container(
@@ -376,23 +450,14 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
           const SizedBox(height: 12),
           Column(
             children: List.generate(displayOptions.length, (optIndex) {
-              final isSelected = selectedOptionIndex == optIndex ||
-                  (question.type == 'true_false' &&
-                      selectedOptionIndex == (optIndex == 0)) ||
-                  (question.type == 'yes_no' &&
-                      selectedOptionIndex ==
-                          (optIndex == 0 ? 'yes' : 'no')) ||
-                  (question.type != 'true_false' &&
-                      question.type != 'yes_no' &&
-                      selectedOptionIndex == displayOptions[optIndex]);
-
+              final selected = isSelected(optIndex);
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 decoration: BoxDecoration(
                   color: isDark ? const Color(0xFF1E293B) : Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: isSelected
+                    color: selected
                         ? const Color(0xFF0EA5E9)
                         : (isDark
                             ? const Color(0xFF334155)
@@ -400,7 +465,16 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
                   ),
                 ),
                 child: InkWell(
-                  onTap: () => onOptionSelected(optIndex),
+                  onTap: () {
+                    if (question.type == 'true_false') {
+                      _controller.selectAnswer(question.id, optIndex == 0);
+                    } else if (question.type == 'yes_no') {
+                      _controller.selectAnswer(
+                          question.id, optIndex == 0 ? 'yes' : 'no');
+                    } else {
+                      _controller.selectAnswer(question.id, optIndex);
+                    }
+                  },
                   borderRadius: BorderRadius.circular(10),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -415,18 +489,18 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected
+                              color: selected
                                   ? const Color(0xFF0EA5E9)
                                   : (isDark
                                       ? const Color(0xFF64748B)
                                       : const Color(0xFF94A3B8)),
                               width: 2,
                             ),
-                            color: isSelected
+                            color: selected
                                 ? const Color(0xFF0EA5E9)
                                 : Colors.transparent,
                           ),
-                          child: isSelected
+                          child: selected
                               ? const Icon(Icons.check,
                                   size: 12, color: Colors.white)
                               : null,
@@ -454,6 +528,314 @@ class _MicrotrainingQuizScreenState extends State<MicrotrainingQuizScreen> {
       ),
     );
   }
+
+  Widget _buildMatchingCard(
+    BuildContext context, {
+    required int questionNumber,
+    required QuizQuestionModel question,
+    required bool isDark,
+  }) {
+    final leftItems = _parseLeftItems(question.options);
+    final rightItems = _parseRightItems(question.options);
+    final selections = _getMatchingSelections(question.id);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Question $questionNumber',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : const Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            question.questionText,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark
+                  ? const Color(0xFFCBD5E1)
+                  : const Color(0xFF475569),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Match each item on the left with the correct item on the right.',
+            style: TextStyle(
+              fontSize: 11,
+              color: isDark
+                  ? const Color(0xFF64748B)
+                  : const Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Left',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF334155),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Right',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF334155),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...leftItems.map((left) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark
+                              ? const Color(0xFF334155)
+                              : const Color(0xFFE2E8F0),
+                        ),
+                      ),
+                      child: Text(
+                        left,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF334155),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Icon(Icons.arrow_forward_rounded,
+                        size: 16, color: Color(0xFF94A3B8)),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF1E293B)
+                            : Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: selections[left] != null
+                              ? const Color(0xFF0EA5E9)
+                              : (isDark
+                                  ? const Color(0xFF334155)
+                                  : const Color(0xFFE2E8F0)),
+                        ),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          isExpanded: true,
+                          value: selections[left],
+                          hint: Text(
+                            'Select',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8),
+                            ),
+                          ),
+                          items: rightItems.map((right) {
+                            return DropdownMenuItem(
+                              value: right,
+                              child: Text(
+                                right,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF334155),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selections[left] = value!;
+                            });
+                            final answer = Map<String, String>.from(selections);
+                            _controller.selectAnswer(question.id, answer);
+                          },
+                          icon: Icon(Icons.keyboard_arrow_down_rounded,
+                              size: 18,
+                              color: isDark
+                                  ? const Color(0xFF64748B)
+                                  : const Color(0xFF94A3B8)),
+                          dropdownColor: isDark
+                              ? const Color(0xFF1E293B)
+                              : Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextInputCard(
+    BuildContext context, {
+    required int questionNumber,
+    required QuizQuestionModel question,
+    required dynamic currentAnswer,
+    required bool isDark,
+  }) {
+    final textCtrl = _getTextController(question.id);
+    final label = question.type == 'scenario' ? 'Scenario' : 'Short Answer';
+    final hint = question.type == 'scenario'
+        ? 'Describe your response...'
+        : 'Type your answer...';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE2E8F0),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Question $questionNumber',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : const Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: question.type == 'scenario'
+                      ? const Color(0xFF7C3AED).withValues(alpha: 0.1)
+                      : const Color(0xFF0EA5E9).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: question.type == 'scenario'
+                        ? const Color(0xFF7C3AED)
+                        : const Color(0xFF0EA5E9),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            question.questionText,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark
+                  ? const Color(0xFFCBD5E1)
+                  : const Color(0xFF475569),
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: textCtrl,
+            maxLines: question.type == 'scenario' ? 4 : 2,
+            style: TextStyle(
+              fontSize: 13,
+              color: isDark ? Colors.white : const Color(0xFF334155),
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                fontSize: 12,
+                color:
+                    isDark ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+              ),
+              filled: true,
+              fillColor: isDark ? const Color(0xFF1E293B) : Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: currentAnswer != null && currentAnswer.toString().isNotEmpty
+                      ? const Color(0xFF0EA5E9)
+                      : (isDark
+                          ? const Color(0xFF334155)
+                          : const Color(0xFFE2E8F0)),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: isDark
+                      ? const Color(0xFF334155)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                  color: Color(0xFF0EA5E9),
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12, vertical: 10),
+            ),
+            onChanged: (value) {
+              _controller.selectAnswer(question.id, value.trim());
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildResultView(bool isDark) {
     final result = _controller.result!;

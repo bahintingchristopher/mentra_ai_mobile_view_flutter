@@ -2,7 +2,7 @@
   final int id;
   final String type;
   final String questionText;
-  final List<String>? options;
+  final dynamic options;
   final int order;
 
   QuizQuestionModel({
@@ -14,16 +14,11 @@
   });
 
   factory QuizQuestionModel.fromJson(Map<String, dynamic> json) {
-    List<String>? parsedOptions;
-    if (json['options'] != null && json['options'] is List) {
-      parsedOptions = (json['options'] as List).map((e) => e.toString()).toList();
-    }
-
     return QuizQuestionModel(
       id: json['id'] ?? 0,
       type: json['type'] ?? 'multiple_choice',
       questionText: json['question_text'] ?? '',
-      options: parsedOptions,
+      options: json['options'],
       order: json['order'] ?? 0,
     );
   }
