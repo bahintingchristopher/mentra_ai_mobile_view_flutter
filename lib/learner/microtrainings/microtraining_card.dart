@@ -1,25 +1,28 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:mentra_mobile_view/learner/microtrainings/microtraining_model.dart';
 
 class MicrotrainingCard extends StatelessWidget {
   final MicrotrainingModel item;
   final VoidCallback? onTap;
   final VoidCallback? onVideoCompleted;
+  final VoidCallback? onOpenForum;
+  final VoidCallback? onStartQuiz;
 
   const MicrotrainingCard({
     super.key,
     required this.item,
     this.onTap,
     this.onVideoCompleted,
+    this.onOpenForum,
+    this.onStartQuiz,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final currentStatus = (item.status).toLowerCase();
-    final isCompleted = currentStatus == 'completed' || currentStatus == 'done';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
@@ -39,6 +42,7 @@ class MicrotrainingCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Categories Badges
               if (item.categories.isNotEmpty) ...[
                 Wrap(
                   spacing: 8,
@@ -67,6 +71,7 @@ class MicrotrainingCard extends StatelessWidget {
                 const SizedBox(height: 10),
               ],
             
+              // Title & Status
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -86,6 +91,7 @@ class MicrotrainingCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
+              // Description
               if (item.description != null && item.description!.isNotEmpty) ...[
                 Text(
                   item.description!,
@@ -99,10 +105,22 @@ class MicrotrainingCard extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
 
-              if (item.videoUrl.isNotEmpty) ...[
+              // Media Players
+              if (item.audioFileUrl.isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: MicrotrainingAudioPlayer(
+                    key: ValueKey('audio_${item.id}'),
+                    audioUrl: item.audioFileUrl,
+                    onAudioCompleted: onVideoCompleted,
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ] else if (item.videoUrl.isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: MicrotrainingVideoPlayer(
+                    key: ValueKey('video_${item.id}'),
                     videoUrl: item.videoUrl,
                     onVideoCompleted: onVideoCompleted,
                   ),
@@ -110,17 +128,18 @@ class MicrotrainingCard extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
 
+              // Meta Details Text
               Text(
-                '${item.questionsCount} questions   •   Assigned ${item.assignedDate}',
+                '${item.questionsCount} question${item.questionsCount == 1 ? '' : 's'}   �   Assigned ${item.assignedDate}',
                 style: TextStyle(
-                  color:
-                      isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
-                  fontSize: 13,
+                  color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                  fontSize: 12,
                 ),
               ),
               const SizedBox(height: 12),
 
-              if (item.noticeMessage.isNotEmpty)
+              // Notice Message Container
+              if (item.noticeMessage.isNotEmpty) ...[
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
@@ -138,12 +157,65 @@ class MicrotrainingCard extends StatelessWidget {
                   child: Text(
                     item.noticeMessage,
                     style: TextStyle(
-                      color:
-                          isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
+                      color: isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
                       fontSize: 13,
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+              ],
+
+              // Action Buttons at Lower Part of Card
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: onOpenForum,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: BorderSide(
+                      color: isDark ? const Color(0xFF0284C7) : const Color(0xFFBAE6FD),
+                    ),
+                    backgroundColor: isDark 
+                        ? const Color(0xFF0C4A6E).withValues(alpha: 0.2) 
+                        : const Color(0xFFF0F9FF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Open Forum',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onStartQuiz,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: const Color(0xFF0EA5E9),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: const Text(
+                    'Start Quiz',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -354,3 +426,184 @@ class _MicrotrainingVideoPlayerState extends State<MicrotrainingVideoPlayer> {
   }
 }
 
+class MicrotrainingAudioPlayer extends StatefulWidget {
+  final String audioUrl;
+  final VoidCallback? onAudioCompleted;
+
+  const MicrotrainingAudioPlayer({
+    super.key,
+    required this.audioUrl,
+    this.onAudioCompleted,
+  });
+
+  @override
+  State<MicrotrainingAudioPlayer> createState() =>
+      _MicrotrainingAudioPlayerState();
+}
+
+class _MicrotrainingAudioPlayerState extends State<MicrotrainingAudioPlayer> {
+  late AudioPlayer _player;
+  bool _isInitialized = false;
+  bool _hasError = false;
+  bool _disposed = false;
+  bool _completionHandled = false;
+  Duration _duration = Duration.zero;
+  Duration _position = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+    _initializePlayer();
+  }
+
+  Future<void> _initializePlayer() async {
+    try {
+      await _player.setUrl(widget.audioUrl);
+
+      _player.durationStream.listen((d) {
+        if (!_disposed && mounted && d != null) {
+          setState(() => _duration = d);
+        }
+      });
+
+      _player.positionStream.listen((p) {
+        if (!_disposed && mounted) {
+          setState(() => _position = p);
+        }
+      });
+
+      _player.playerStateStream.listen((state) {
+        if (_disposed || !mounted) return;
+        if (state.processingState == ProcessingState.completed &&
+            !_completionHandled) {
+          _completionHandled = true;
+          widget.onAudioCompleted?.call();
+        }
+      });
+
+      if (!_disposed && mounted) {
+        setState(() => _isInitialized = true);
+      }
+    } catch (e) {
+      if (!_disposed && mounted) {
+        setState(() => _hasError = true);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    _player.dispose();
+    super.dispose();
+  }
+
+  String _formatDuration(Duration d) {
+    final minutes = d.inMinutes.remainder(60).toString().padLeft(2, "0");
+    final seconds = d.inSeconds.remainder(60).toString().padLeft(2, "0");
+    return "$minutes:$seconds";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasError) {
+      return Container(
+        height: 80,
+        color: Colors.black12,
+        child: const Center(
+          child: Text(
+            "Unable to load audio",
+            style: TextStyle(color: Colors.red, fontSize: 13),
+          ),
+        ),
+      );
+    }
+
+    if (!_isInitialized) {
+      return Container(
+        height: 80,
+        color: const Color(0xFF0F172A),
+        child: const Center(
+          child: CircularProgressIndicator(color: Color(0xFF0EA5E9)),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _player.playing ? _player.pause() : _player.play();
+                  });
+                },
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF0EA5E9),
+                    shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Icon(
+                    _player.playing
+                        ? Icons.pause_rounded
+                        : Icons.play_arrow_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: SliderTheme(
+                  data: SliderThemeData(
+                    trackHeight: 3,
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                    activeTrackColor: const Color(0xFF0EA5E9),
+                    inactiveTrackColor: Colors.white24,
+                    thumbColor: const Color(0xFF0EA5E9),
+                    overlayColor: const Color(0x290EA5E9),
+                  ),
+                  child: Slider(
+                    value: _position.inMilliseconds
+                        .toDouble()
+                        .clamp(0.0, _duration.inMilliseconds.toDouble()),
+                    max: _duration.inMilliseconds.toDouble() > 0
+                        ? _duration.inMilliseconds.toDouble()
+                        : 1.0,
+                    onChanged: (v) {
+                      _player.seek(Duration(milliseconds: v.toInt()));
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                _formatDuration(_position),
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+              Text(
+                _formatDuration(_duration),
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

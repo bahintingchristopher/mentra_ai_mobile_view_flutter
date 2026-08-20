@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import 'package:mentra_mobile_view/learner/home/widgets/home_header.dart';
 import 'package:mentra_mobile_view/learner/home/widgets/learner_bottomnav.dart';
@@ -167,6 +167,9 @@ class _LearnerHomeState extends State<LearnerHome> {
               questionsCount: m.questionsCount,
               assignedDate: m.assignedDate,
               noticeMessage: m.noticeMessage,
+              audioFileUrl: m.audioFileUrl,
+              questions: m.questions,
+              shuffleQuestions: m.shuffleQuestions,
             );
           }
           return m;

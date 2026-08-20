@@ -8,6 +8,8 @@ class MicrotrainingView extends StatelessWidget {
   final String? error;
   final VoidCallback? onRetry;
   final void Function(int microtrainingId)? onVideoCompleted;
+  final void Function(MicrotrainingModel item)? onOpenForum;
+  final void Function(MicrotrainingModel item)? onStartQuiz;
 
   const MicrotrainingView({
     super.key,
@@ -16,6 +18,8 @@ class MicrotrainingView extends StatelessWidget {
     this.error,
     this.onRetry,
     this.onVideoCompleted,
+    this.onOpenForum,
+    this.onStartQuiz,
   });
 
   @override
@@ -63,11 +67,14 @@ class MicrotrainingView extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       itemBuilder: (context, index) {
+        final item = items[index];
         return MicrotrainingCard(
-          item: items[index],
+          item: item,
           onVideoCompleted: onVideoCompleted != null
-              ? () => onVideoCompleted!(items[index].id)
+              ? () => onVideoCompleted!(item.id)
               : null,
+          onOpenForum: onOpenForum != null ? () => onOpenForum!(item) : null,
+          onStartQuiz: onStartQuiz != null ? () => onStartQuiz!(item) : null,
         );
       },
     );
